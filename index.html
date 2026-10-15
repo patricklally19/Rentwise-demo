@@ -1,0 +1,136 @@
+<!DOCTYPE html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>RentWise: Your property. Your way.</title>
+<link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0E5A57"><meta name="description" content="RentWise: Your property. Your way.">
+<link rel="icon" href="icons/icon-192.png"><link rel="apple-touch-icon" href="icons/apple-touch-icon.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="RentWise"><meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700&display=swap">
+<style>
+:root{--bg:#F2F6F5;--card:#fff;--ink:#12302F;--mut:#58706E;--brand:#0E5A57;--onb:#fff;--soft:#E2F0ED;--line:#DAE5E3;--ok:#18794E;--okb:#E2F4EA;--warn:#9A5B0B;--warnb:#FCEFD6;--bad:#B4321F;--badb:#FBE5E1;--amber:#F0A63A;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0B1918;--card:#13292A;--ink:#E7F3F1;--mut:#98B3B0;--brand:#4CC2B3;--onb:#06201E;--soft:#17403F;--line:#244544;--ok:#5FD39B;--okb:#12382A;--warn:#F3B65B;--warnb:#3B2C10;--bad:#FF8E7C;--badb:#4A1D17;color-scheme:dark}}
+:root[data-theme=dark]{--bg:#0B1918;--card:#13292A;--ink:#E7F3F1;--mut:#98B3B0;--brand:#4CC2B3;--onb:#06201E;--soft:#17403F;--line:#244544;--ok:#5FD39B;--okb:#12382A;--warn:#F3B65B;--warnb:#3B2C10;--bad:#FF8E7C;--badb:#4A1D17;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Figtree,system-ui,sans-serif}
+.demo{background:var(--warnb);color:var(--warn);font-size:12.5px;padding:6px 12px;text-align:center;font-weight:600}
+.app{display:flex}
+nav{position:fixed;bottom:0;left:0;right:0;z-index:5;display:flex;background:var(--card);border-top:1px solid var(--line);padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px))}
+nav .b{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;font:600 11px Figtree,system-ui;color:var(--mut);background:none;border:0;padding:6px 2px;cursor:pointer}
+nav .b.on{color:var(--brand)}nav svg{width:24px;height:24px}
+.brand{display:none}.top{display:flex;align-items:center;gap:10px;font-weight:700;font-size:20px;margin-bottom:6px}.top small,.brand small{font-weight:400;font-size:12px;color:var(--mut);display:block}
+.logo{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:10px;background:var(--brand);color:var(--onb);flex:none}.logo svg{width:20px;height:20px}
+main{flex:1;min-width:0;padding:14px 16px 110px;max-width:980px;margin:0 auto}
+h1{font-size:26px;line-height:1.2;margin:4px 0}h2{font-size:17px;margin:0 0 8px}p{margin:4px 0}
+.mut{color:var(--mut)}.grid{display:grid;gap:12px}.k4{grid-template-columns:repeat(2,1fr)}.two{grid-template-columns:1fr}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-top:1px solid var(--line)}.list>.row:first-child{border-top:0}
+.chip{display:inline-block;font-size:12px;font-weight:700;padding:2px 9px;border-radius:99px;white-space:nowrap}.chip.ok{background:var(--okb);color:var(--ok)}.chip.warn{background:var(--warnb);color:var(--warn)}.chip.bad{background:var(--badb);color:var(--bad)}
+.btn{background:var(--brand);color:var(--onb);border:0;border-radius:10px;padding:10px 16px;font:600 15px Figtree,system-ui;cursor:pointer;min-height:44px}.btn.g{background:var(--soft);color:var(--brand)}.btn.t{background:none;color:var(--mut);padding-left:0}
+.kpi b{display:block;font-size:26px;line-height:1.2}.bar{height:6px;border-radius:9px;background:var(--soft);overflow:hidden;margin-top:8px}.bar i{display:block;height:100%;background:var(--brand)}
+.hero{background:var(--brand);color:var(--onb);border:0;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.hero h1{margin:0}
+.tap{cursor:pointer}.tap:hover{border-color:var(--brand)}button:focus-visible,.tap:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.tabs{display:flex;gap:6px;overflow-x:auto;margin:12px 0}.tabs .btn{white-space:nowrap;min-height:38px;padding:8px 14px}
+.modal{position:fixed;inset:0;background:#0009;display:flex;align-items:flex-end;justify-content:center;z-index:20}
+.sheet{background:var(--card);width:100%;max-width:640px;max-height:88%;overflow:auto;border-radius:18px 18px 0 0;padding:18px 18px calc(18px + env(safe-area-inset-bottom,0px))}
+.draft{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px;margin:10px 0;font-size:14px;white-space:pre-wrap}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(90px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;z-index:30;font-size:14px;max-width:90%}
+.bx{height:10px;border-radius:6px;background:var(--brand)}.ai{border-left:5px solid var(--warn)}.ai.bad{border-left-color:var(--bad)}
+@media(min-width:860px){.k4{grid-template-columns:repeat(4,1fr)}.two{grid-template-columns:1fr 1fr}.top{display:none}
+nav{position:sticky;top:env(safe-area-inset-top,0px);height:100vh;width:230px;flex:none;flex-direction:column;border-top:0;border-right:1px solid var(--line);padding:18px 12px;gap:4px;align-self:flex-start}
+nav .b{flex:none;flex-direction:row;gap:12px;font-size:15px;padding:12px 14px;border-radius:10px;justify-content:flex-start}nav .b.on{background:var(--soft)}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:20px;margin:0 0 18px 6px}main{padding-bottom:40px}.modal{align-items:center}.sheet{border-radius:18px}.toast{bottom:30px}}
+</style></head><body>
+<div class="demo">Investor prototype. Demonstration data only. Nothing is sent or paid.</div>
+<div class="app"><nav id="nav"></nav><main id="main"></main></div><div id="mod"></div>
+<script>
+const $=s=>document.querySelector(s),gbp=n=>'£'+Math.round(n).toLocaleString('en-GB'),T=new Date('2026-10-15');
+const dd=s=>Math.round((new Date(s)-T)/864e5),fd=s=>new Date(s).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+const ic=d=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${d}"/></svg>`;
+const logo=`<span class="logo">${ic('M3 11l9-8 9 8M5 9.5V21h14V9.5M10 21v-6h4v6')}</span>`;
+const NAV=[['dash','Home','M3 11l9-8 9 8M5 9.5V21h14V9.5M10 21v-6h4v6'],['props','Properties','M3 21h18M5 21V8l7-5 7 5v13M9 21v-5h6v5'],['comp','Compliance','M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6zM9 12l2 2 4-4'],['fin','Finances','M4 20V11M10 20V4M16 20v-6M22 20H2'],['ai','AI Assistant','M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8zM19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z']];
+const raw=[
+['14 Hollis Road','Leeds LS6 2BN','2-bed terrace','Amelia Hart',895,'2027-03-12','2029-05-01','2031-02-10','2027-01-20',0,'2027-04-30'],
+['3 Marlow Court','Manchester M14 5QT','1-bed flat','Daniel Okafor',825,'2026-11-02','2028-08-14','2030-06-01','2027-04-01',0,'2027-02-14'],
+['27 Beech Avenue','Bristol BS7 8PL','3-bed semi','The Whitfield family',1350,'2027-06-18','2030-01-09','2029-09-12','2027-08-08',0,'2027-06-30'],
+['8 Canal Street','Birmingham B1 2HF','2-bed flat','Sana Malik',980,'2027-02-25','2026-12-01','2028-03-03','2027-02-01',12,'2027-01-31'],
+['52 Alderley Road','Sheffield S11 8SP','3-bed terrace','Tom & Lucy Barrett',1050,'2026-11-09','2029-10-20','2027-05-05','2027-05-20',0,'2026-12-31'],
+['19 Kingsley Mews','London E8 3PN','1-bed flat','Chloe Zhang',1650,'2027-04-30','2031-02-02','2032-08-08','2027-03-10',0,'2027-05-31'],
+['6 Harbour View','Liverpool L3 4BP','Studio','Marcus Bell',640,'2027-01-14','2026-09-20','2028-12-12','2027-06-01',0,'2027-03-15'],
+['41 Northgate','Newcastle NE1 4XF','2-bed flat','Fiona Rowe',870,'2027-05-22','2029-03-30','2033-12-18','2027-05-30',0,'2027-07-31'],
+['73 Mill Lane','Nottingham NG7 2RD','4-bed house share','Four sharers',1900,'2026-10-28','2028-11-11','2029-04-04','2026-12-30',0,'2027-08-31'],
+['2 Rosehill Close','Reading RG30 2QA','3-bed semi','Gareth & Ana Price',1100,'2027-07-07','2030-04-04','2030-11-01','2027-07-01',0,'2027-09-30'],
+['35 Unthank Road','Norwich NR2 2PE','2-bed flat','Isla Macleod',1200,'2027-02-02','2029-06-06','2031-05-05','2027-02-20',0,'2027-04-15'],
+['11 Thornbury Gardens','Southampton SO15 2LP','2-bed terrace','Jamal Reid',925,'2027-03-03','2028-02-02','2026-12-02','2027-03-30',21,'2027-02-28']];
+const P=raw.map((r,i)=>({id:i,addr:r[0],area:r[1],type:r[2],ten:r[3],rent:r[4],c:r.slice(5,9),late:r[9],end:r[10],ph:'07700 900'+(110+i*53),em:r[3].toLowerCase().replace(/[^a-z]+/g,'.').replace(/\.$/,'')+'@example.com'}));
+const M=[[2,'Boiler pressure keeps dropping','In progress','12 Oct 2026'],[5,'Leaking kitchen tap','Open','9 Oct 2026'],[9,'Damp patch on bedroom wall','Open','7 Oct 2026'],[11,'Mouldy bathroom sealant','In progress','10 Oct 2026'],[0,'Extractor fan replaced','Done','21 Aug 2026'],[3,'Intercom repaired','Done','2 Sep 2026'],[7,'Garden fence repaired','Done','14 Jul 2026']];
+const CN=['Gas Safety','EICR (electrical)','EPC','Legionella risk assessment'],PER=['every year','every 5 years','every 10 years','every 2 years'];
+const SA=['Book a Gas Safe engineer for the annual check.','Book a registered electrician for an inspection.','Order a new EPC and check the rating.','Review the risk assessment with a competent person.'];
+const st=d=>d<0?['bad','Expired '+(-d)+' days ago']:d<=60?['warn','Expires in '+d+' days']:['ok','Valid'];
+const chip=d=>{const s=st(d);return `<span class="chip ${s[0]}">${s[1]}</span>`};
+const ALL=P.flatMap(p=>p.c.map((s,k)=>({p,k,s,d:dd(s)}))),AL=ALL.filter(a=>a.d<=60).sort((a,b)=>a.d-b.d);
+const TOT=P.reduce((a,p)=>a+p.rent,0),LATE=P.filter(p=>p.late),ARR=LATE.reduce((a,p)=>a+p.rent,0),COL=TOT-ARR;
+const draft=(to,sub,body)=>[to,sub,body+'\n\nThank you,\nAlex Morgan'];
+const CARDS=[
+{id:'gas',lv:'bad',t:'Three gas safety certificates are expiring soon',b:'Mill Lane, Marlow Court and Alderley Road expire between 28 Oct and 9 Nov. A valid certificate is a legal requirement. Would you like me to prepare contractor booking requests?',btn:'Review 3 booking requests',d:()=>AL.filter(a=>a.k==0).map(a=>draft('Demo Heating Ltd (Gas Safe engineer)','Gas safety check: '+a.p.addr,`Hello,\n\nPlease can you book a landlord gas safety check at ${a.p.addr}, ${a.p.area}? The current certificate expires on ${fd(a.s)}.\n\nTenant: ${a.p.ten} (${a.p.ph}). Please arrange access with them directly.`))},
+{id:'ren',lv:'bad',t:'Three more certificates need renewing',b:'The electrical report (EICR) at Harbour View has already expired. The Canal Street EICR and Thornbury Gardens EPC run out in early December. I can request quotes and dates.',btn:'Review 3 quote requests',d:()=>AL.filter(a=>a.k!=0).map(a=>draft(a.k==1?'Registered electrician (NICEIC)':'Domestic energy assessor','Quote request: '+CN[a.k]+', '+a.p.addr,`Hello,\n\nI would like a quote and available dates for a new ${CN[a.k]} at ${a.p.addr}, ${a.p.area}. The current one ${a.d<0?'expired':'expires'} on ${fd(a.s)}.`))},
+{id:'rent',lv:'warn',t:'Two tenants are late with October rent',b:gbp(ARR)+' is outstanding. I have drafted polite, friendly reminders. I will not escalate anything without your approval.',btn:'Review 2 reminders',d:()=>LATE.map(p=>draft(p.ten+' ('+p.em+')','Quick check on October rent, '+p.addr,`Hi ${p.ten.split(' ')[0]},\n\nOctober's rent of ${gbp(p.rent)} for ${p.addr} hasn't arrived yet (${p.late} days). Could you let me know when to expect it? If anything is wrong, just reply and we will sort it out together.`))},
+{id:'damp',lv:'warn',t:'Possible damp reported at Rosehill Close',b:'The tenants logged a damp patch on 7 October. Left alone, damp can become a serious hazard. I suggest photos and a surveyor quote this week.',btn:'Review 2 messages',d:()=>[draft('Gareth & Ana Price','Damp patch: could you send photos?','Hi Gareth and Ana,\n\nThanks for reporting the damp patch in the bedroom. Could you send a couple of photos and let me know when it first appeared? I am arranging for someone to take a look.'),draft('Reading Property Surveyors (demo)','Damp survey quote: 2 Rosehill Close','Hello,\n\nPlease can you quote for a damp survey at 2 Rosehill Close, Reading RG30 2QA? Tenants are Gareth and Ana Price.')]},
+{id:'rev',lv:'warn',t:'Rent review: Alderley Road tenancy ends 31 December',b:'Rent is £1,050. Similar homes nearby let for about £1,090 to £1,120 (demo estimate). I suggest offering a 12-month renewal at £1,095.',btn:'Review renewal offer',d:()=>[draft('Tom & Lucy Barrett (tom.lucy.barrett@example.com)','Renewing your tenancy at 52 Alderley Road','Hi Tom and Lucy,\n\nYour tenancy ends on 31 December. I would be glad to offer you a new 12-month agreement from 1 January at £1,095 a month. Please let me know if you would like to go ahead.')]}];
+const Q=[['Which property earns the most?','Kingsley Mews in London earns the most at £1,650 a month, about 12% of your rent roll.'],['What should I do this week?','Three things: approve the gas safety bookings, chase the two late payments, and get the expired Harbour View EICR booked.'],['Can I raise the rent at Alderley Road?','Their tenancy ends on 31 Dec. £1,095 looks fair against nearby homes, and a renewal offer is ready for you to approve above.']];
+const S={v:'dash',p:null,ct:'all',st:{},chat:'',m:null};
+const pend=()=>CARDS.filter(c=>!S.st[c.id]).length;
+const kv=a=>`<div class="list">${a.map(r=>`<div class="row"><span class="mut">${r[0]}</span><span style="text-align:right">${r[1]}</span></div>`).join('')}</div>`;
+const rows=(a,f)=>`<div class="list">${a.map(f).join('')}</div>`;
+
+const dash=()=>{const ex=AL.filter(a=>a.d<0).length,op=M.filter(m=>m[2]!='Done');return `<h1>Good morning, Alex</h1><p class="mut">Thursday 15 October. Here is your portfolio today.</p>
+<div class="grid k4" style="margin:12px 0"><div class="card kpi"><span class="mut">Properties</span><b>12</b><span class="mut">All currently let</span></div>
+<div class="card kpi"><span class="mut">Rent collected</span><b>${gbp(COL)}</b><span class="mut">of ${gbp(TOT)} due</span><div class="bar"><i style="width:${COL/TOT*100}%"></i></div></div>
+<div class="card kpi tap" data-v="fin"><span class="mut">Outstanding rent</span><b style="color:var(--bad)">${gbp(ARR)}</b><span class="mut">${LATE.length} tenants late</span></div>
+<div class="card kpi tap" data-v="comp"><span class="mut">Compliance alerts</span><b style="color:var(--warn)">${AL.length}</b><span class="mut">${ex} expired, ${AL.length-ex} expiring</span></div></div>
+<div class="card hero" style="margin-bottom:12px"><div><b style="font-size:18px">${pend()} actions are ready for your approval</b><br>RentWise prepared them. Nothing happens until you say so.</div><button class="btn g" data-v="ai">Review actions</button></div>
+<div class="grid two"><div class="card"><h2>Compliance alerts</h2>${rows(AL.slice(0,4),a=>`<div class="row tap" data-p="${a.p.id}"><div><b>${CN[a.k]}</b><br><span class="mut">${a.p.addr}</span></div>${chip(a.d)}</div>`)}<button class="btn t" data-v="comp">See all ${AL.length} alerts</button></div>
+<div class="card"><h2>Maintenance issues</h2>${rows(op,m=>`<div class="row tap" data-p="${m[0]}"><div><b>${m[1]}</b><br><span class="mut">${P[m[0]].addr}, reported ${m[3]}</span></div><span class="chip ${m[2]=='Open'?'bad':'warn'}">${m[2]}</span></div>`)}</div>
+<div class="card"><h2>Upcoming tasks</h2>${rows([['Renew 3 gas safety certificates','by 9 Nov','comp'],['Chase 2 late payments','today','fin'],['Rent review at Alderley Road','tenancy ends 31 Dec','ai'],['Buildings insurance renewal','1 Nov','fin']],t=>`<div class="row tap" data-v="${t[2]}"><b>${t[0]}</b><span class="mut">${t[1]}</span></div>`)}</div></div>`};
+
+const props=()=>`<h1>My properties</h1><p class="mut">12 homes, ${gbp(TOT)} a month in rent. Tap one for details.</p><div class="grid two" style="margin-top:12px">${P.map(p=>{const n=AL.filter(a=>a.p==p).length;return `<div class="card tap" data-p="${p.id}"><div class="row" style="padding:0;border:0"><div><b>${p.addr}</b><br><span class="mut">${p.area}</span></div><b>${gbp(p.rent)}<small class="mut">/mo</small></b></div><p class="mut">${p.type}, ${p.ten}</p><div class="chips" style="margin:8px 0 0">${p.late?`<span class="chip bad">${p.late} days late</span>`:'<span class="chip ok">Rent paid</span>'}${n?`<span class="chip warn">${n} certificate alert${n>1?'s':''}</span>`:'<span class="chip ok">Compliant</span>'}</div></div>`}).join('')}</div>`;
+
+const det=()=>{const p=P[S.p],mm=M.filter(m=>m[0]==p.id);return `<button class="btn t" data-back>← All properties</button><h1>${p.addr}</h1><p class="mut">${p.area}, ${p.type}</p><div class="grid two" style="margin-top:12px">
+<div class="card"><h2>Tenant</h2>${kv([['Name',p.ten],['Phone',p.ph],['Email',p.em],['Monthly rent',gbp(p.rent)],['Rent status',p.late?`<span class="chip bad">${p.late} days late</span>`:'<span class="chip ok">Paid</span>'],['Tenancy ends',fd(p.end)],['Deposit',gbp(p.rent*60/52)+', protected']])}</div>
+<div class="card"><h2>Certificates</h2>${rows(p.c,(s,k)=>`<div class="row"><div><b>${CN[k]}</b><br><span class="mut">Due ${PER[k]}. Expires ${fd(s)}</span></div>${chip(dd(s))}</div>`)}</div>
+<div class="card"><h2>Documents</h2>${rows(['Tenancy agreement','Inventory and check-in report','How to Rent guide','Deposit protection certificate','Gas Safety certificate','EICR report'],d=>`<div class="row"><span>${d}</span><button class="btn g" style="min-height:36px;padding:6px 12px" data-toast="Demo only: documents open here in the full product">View</button></div>`)}</div>
+<div class="card"><h2>Maintenance history</h2>${mm.length?rows(mm,m=>`<div class="row"><div><b>${m[1]}</b><br><span class="mut">${m[3]}</span></div><span class="chip ${m[2]=='Done'?'ok':m[2]=='Open'?'bad':'warn'}">${m[2]}</span></div>`):'<p class="mut">No repairs logged yet.</p>'}<button class="btn g" style="margin-top:8px" data-toast="Demo only: repair requests are created here in the full product">Log a repair</button></div></div>`};
+
+const comp=()=>{const ex=ALL.filter(a=>a.d<0).length,wa=ALL.filter(a=>a.d>=0&&a.d<=60).length,f=(S.ct=='all'?ALL:ALL.filter(a=>a.k==S.ct)).slice().sort((a,b)=>a.d-b.d);return `<h1>Compliance</h1><p class="mut">Safety certificates across all 12 properties.</p>
+<div class="grid k4" style="margin:12px 0"><div class="card kpi"><span class="mut">Expired</span><b style="color:var(--bad)">${ex}</b></div><div class="card kpi"><span class="mut">Expiring in 60 days</span><b style="color:var(--warn)">${wa}</b></div><div class="card kpi"><span class="mut">Valid</span><b style="color:var(--ok)">${ALL.length-ex-wa}</b></div></div>
+<div class="card"><h2>Needs action</h2>${rows(AL,a=>`<div class="row tap" data-p="${a.p.id}"><div><b>${CN[a.k]}, ${a.p.addr}</b><br><span class="mut">${a.d<0?'Urgent: ':''}${SA[a.k]}</span></div>${chip(a.d)}</div>`)}<button class="btn" style="margin-top:8px" data-v="ai">Let RentWise prepare the bookings</button></div>
+<div class="tabs">${[['all','All'],[0,'Gas'],[1,'EICR'],[2,'EPC'],[3,'Legionella']].map(t=>`<button class="btn ${S.ct==t[0]?'':'g'}" data-ct="${t[0]}">${t[1]}</button>`).join('')}</div>
+<div class="card">${rows(f,a=>`<div class="row"><div><b>${a.p.addr}</b><br><span class="mut">${CN[a.k]}, expires ${fd(a.s)}</span></div>${chip(a.d)}</div>`)}</div>`};
+
+const fin=()=>{const inc=[12480,12480,13385,13385,13385,COL],ex=[2130,1420,1980,1650,2210,2790],lb=['May','Jun','Jul','Aug','Sep','Oct'],mx=13385*1.1,cat=[['Repairs and maintenance',1240],['Service charges and ground rent',590],['Insurance',460],['Certificates and compliance',385],['Software and fees',115]];
+const svg=`<svg viewBox="0 0 330 170" width="100%" role="img" aria-label="Rent income and expenses, May to October">${inc.map((v,i)=>{const x=10+i*52,h1=v/mx*130,h2=ex[i]/mx*130;return `<rect x="${x}" y="${140-h1}" width="20" height="${h1}" rx="4" fill="var(--brand)"/><rect x="${x+22}" y="${140-h2}" width="20" height="${h2}" rx="4" fill="var(--amber)"/><text x="${x+21}" y="160" text-anchor="middle" font-size="11" fill="var(--mut)">${lb[i]}</text>`}).join('')}</svg>`;
+return `<h1>Finances</h1><p class="mut">October 2026</p><div class="grid k4" style="margin:12px 0"><div class="card kpi"><span class="mut">Rent collected</span><b>${gbp(COL)}</b></div><div class="card kpi"><span class="mut">Expenses</span><b>${gbp(2790)}</b></div><div class="card kpi"><span class="mut">Net income</span><b style="color:var(--ok)">${gbp(COL-2790)}</b></div><div class="card kpi"><span class="mut">Rent arrears</span><b style="color:var(--bad)">${gbp(ARR)}</b></div></div>
+<div class="grid two"><div class="card"><h2>Income and expenses</h2>${svg}<p class="mut"><span style="color:var(--brand)">■</span> Rent income &nbsp; <span style="color:var(--amber)">■</span> Expenses</p></div>
+<div class="card"><h2>Where the money went</h2>${cat.map(c=>`<p>${c[0]} <b style="float:right">${gbp(c[1])}</b></p><div class="bx" style="width:${c[1]/1240*100}%;margin-bottom:8px"></div>`).join('')}</div>
+<div class="card"><h2>Rent arrears</h2>${rows(LATE,p=>`<div class="row"><div><b>${p.ten}</b><br><span class="mut">${p.addr}, ${p.late} days late</span></div><div style="text-align:right"><b>${gbp(p.rent)}</b><br><button class="btn g" style="min-height:32px;padding:4px 10px" data-v="ai">Draft reminder</button></div></div>`)}</div>
+<div class="card"><h2>Upcoming payments</h2>${rows([['Contractor invoice, Beech Avenue boiler','20 Oct',180],['Buildings insurance renewal','1 Nov',460],['Ground rent, Marlow Court','3 Nov',250],['Self Assessment payment on account','31 Jan',2400]],u=>`<div class="row"><div><b>${u[0]}</b><br><span class="mut">Due ${u[1]}</span></div><b>${gbp(u[2])}</b></div>`)}</div></div>`};
+
+const ai=()=>`<div class="card hero" style="margin:8px 0 12px"><div><h1>RentWise AI</h1><p>I checked all 12 properties this morning. ${pend()} things need your decision. I prepare the work and you approve each action.</p></div></div>
+${CARDS.map(c=>{const s=S.st[c.id];return `<div class="card ai ${c.lv}" style="margin-bottom:12px"><h2>${c.t}</h2>${s=='ok'?`<p><span class="chip ok">Approved</span> ${c.d().length} message${c.d().length>1?'s':''} queued. Demo only, nothing was sent.</p><button class="btn t" data-un="${c.id}">Undo</button>`:s=='no'?`<p class="mut">Dismissed.</p><button class="btn t" data-un="${c.id}">Undo</button>`:`<p>${c.b}</p><div class="chips"><button class="btn" data-rv="${c.id}">${c.btn}</button><button class="btn g" data-no="${c.id}">Dismiss</button></div>`}</div>`}).join('')}
+<div class="card"><h2>Ask RentWise</h2><div class="chips">${Q.map((q,i)=>`<button class="btn g" data-q="${i}">${q[0]}</button>`).join('')}</div><p>${S.chat||'<span class="mut">Tap a question. Demo answers are scripted.</span>'}</p></div>`;
+
+const modal=()=>{const c=CARDS.find(c=>c.id==S.m);return `<div class="modal" data-x><div class="sheet"><h2>${c.btn}</h2><p class="mut">Check each draft. Nothing is sent in this demo.</p>${c.d().map(d=>`<div class="draft"><b>To:</b> ${d[0]}\n<b>Subject:</b> ${d[1]}\n\n${d[2]}</div>`).join('')}<div class="chips"><button class="btn" data-ok="${c.id}">Approve all</button><button class="btn g" data-toast="Demo only: editing opens here in the full product">Edit drafts</button><button class="btn t" data-x>Cancel</button></div></div></div>`};
+
+function render(){const V={dash,props:()=>S.p==null?props():det(),comp,fin,ai};
+$('#nav').innerHTML=`<div class="brand">${logo}<div>RentWise<small>Your property. Your way.</small></div></div>`+NAV.map(n=>`<button class="b ${S.v==n[0]?'on':''}" data-v="${n[0]}">${ic(n[2])}${n[1]}</button>`).join('');
+$('#main').innerHTML=`<div class="top">${logo}<div>RentWise<small>Your property. Your way.</small></div></div>`+V[S.v]();
+$('#mod').innerHTML=S.m?modal():'';
+document.querySelectorAll('.tap').forEach(e=>{e.tabIndex=0;e.setAttribute('role','button')});}
+function toast(m){const t=document.createElement('div');t.className='toast';t.setAttribute('role','status');t.textContent=m;document.body.append(t);setTimeout(()=>t.remove(),2800)}
+document.addEventListener('click',e=>{const t=e.target.closest('[data-v],[data-p],[data-back],[data-ct],[data-rv],[data-ok],[data-no],[data-un],[data-toast],[data-q],[data-x]');if(!t)return;const d=t.dataset;
+if(d.x!=null){if(t.classList.contains('modal')&&e.target!==t)return;S.m=null;render();return}
+if(d.toast){toast(d.toast);return}
+if(d.v){S.v=d.v;S.p=null}else if(d.p!=null){S.v='props';S.p=+d.p}else if(d.back!=null)S.p=null;
+else if(d.ct!=null)S.ct=d.ct;else if(d.rv)S.m=d.rv;
+else if(d.ok){S.st[d.ok]='ok';S.m=null;toast('Approved. Queued for sending (demo only, nothing was sent).')}
+else if(d.no)S.st[d.no]='no';else if(d.un)delete S.st[d.un];else if(d.q!=null)S.chat=Q[d.q][1];
+render();if(!d.ct&&!d.q&&!d.ok&&!d.no&&!d.un&&!d.rv)scrollTo(0,0)});
+document.addEventListener('keydown',e=>{if(e.key=='Enter'&&e.target.classList.contains('tap'))e.target.click();if(e.key=='Escape'&&S.m){S.m=null;render()}});
+render();
+if('serviceWorker' in navigator&&location.protocol.startsWith('http'))addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+</script></body></html>
