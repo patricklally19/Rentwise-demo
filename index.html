@@ -119,6 +119,8 @@ body.rw-doc-open{overflow:hidden}
 .rw-op-item{min-width:0;overflow-wrap:anywhere}
 .rw-op-item button[disabled]{opacity:.42;cursor:not-allowed;filter:grayscale(.5)}
 @media(max-width:600px){.rw-let-gates{gap:14px}.rw-let-field input,.rw-let-field select{font-size:16px}.rw-op-item{padding-inline:0}}
+</style><style>
+.rw-newhome .card{margin:12px 0;padding:20px}.rw-newhome h2{font-size:20px;line-height:1.3;margin:10px 0}.rw-hero{background:#f6faf9}.rw-hero p{line-height:1.5}.rw-metrics{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}.rw-metrics>div{padding:13px;border:1px solid #dae5e2;border-radius:12px;background:white}.rw-metrics small,.rw-property small,.rw-task small,.rw-detail small{display:block;color:#647b77;font-size:13px;margin-top:5px}.rw-metrics b{display:block;font-size:24px;margin-top:5px}.rw-task,.rw-property{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 0;border-bottom:1px solid #e1e9e6}.rw-task:last-child,.rw-property:last-child{border-bottom:0}.rw-task .btn{flex-shrink:0}.rw-property{margin:10px 0!important}.rw-fold summary{font-weight:700;cursor:pointer;padding:5px 0}.rw-fold[open] summary{margin-bottom:15px}.rw-section-heading{margin:22px 0 8px}.rw-simple-card{margin:16px 0}.rw-detail{display:flex;justify-content:space-between;gap:14px;padding:13px 0;border-bottom:1px solid #e1e9e6}.rw-detail span{color:#536b66}.rw-note{font-size:13px;line-height:1.5}.rw-simple-card .market-form label,.rw-simple-card label{display:block;margin-top:12px}.rw-simple-card input,.rw-simple-card select{display:block;width:100%;max-width:100%;box-sizing:border-box;margin:6px 0 12px}@media(max-width:500px){.rw-newhome .card{padding:16px}.rw-task{align-items:flex-start}.rw-task .btn{padding:11px 14px;font-size:14px}}
 </style></head><body>
 <div class="demo">RentWise V14 · Investor prototype. Demonstration data only. Nothing is sent or paid.</div>
 <div class="app"><nav id="nav"></nav><main id="main"></main></div><div id="mod"></div>
@@ -166,43 +168,80 @@ const pend=()=>CARDS.filter(c=>!S.st[c.id]).length;
 const kv=a=>`<div class="list">${a.map(r=>`<div class="row"><span class="mut">${r[0]}</span><span style="text-align:right">${r[1]}</span></div>`).join('')}</div>`;
 const rows=(a,f)=>`<div class="list">${a.map(f).join('')}</div>`;
 
+
+const RW_FOCUS={type:'',id:''};
+function rwGoFocus(type,id){RW_FOCUS.type=type;RW_FOCUS.id=String(id||'');S.v='focus';S.p=null;render();scrollTo(0,0)}
+function rwTaskState(t){
+ if(t.review==='reviewed'||/Document reviewed/.test(t.status))return 'complete';
+ if(t.appointment||/Appointment arranged/.test(t.status))return 'progress';
+ return 'action';
+}
+function rwFocusPage(){
+ const back='<button class="btn g" data-v="dash">← Back to home</button>';
+ if(RW_FOCUS.type==='compliance'){
+ const t=RW_OP.compliance.find(x=>String(x.id)===RW_FOCUS.id);
+ if(!t)return back+'<div class="card">This task is no longer available.</div>';
+ const state=rwTaskState(t);
+ return `<h1>Gas & certificate renewal</h1><p class="mut">${me(t.property)} · ${me(t.kind)}</p>${back}
+ <div class="card rw-simple-card"><span class="chip ${state==='complete'?'ok':state==='progress'?'ok':'warn'}">${state==='complete'?'Document review recorded':state==='progress'?'Appointment recorded · awaiting certificate':'Booking needs arranging'}</span>
+ <h2>${state==='progress'?'RentWise is tracking this renewal':state==='complete'?'Review recorded':'Arrange a specialist appointment'}</h2>
+ <p class="mut">${state==='progress'?'No further booking action is needed. After the inspection, the replacement certificate must be checked by a responsible person.':'This demo records the next step; it does not contact a specialist or verify certificates.'}</p>
+ <div class="rw-detail"><span>Specialist</span><b>${me(t.specialist||'Not recorded')}</b></div>
+ <div class="rw-detail"><span>Appointment</span><b>${me(t.appointment||'Not arranged')}</b></div>
+ <div class="rw-detail"><span>Certificate expiry</span><b>${me(t.expiry||'Not recorded')}</b></div>
+ <details class="rw-fold"><summary>${state==='progress'?'Update appointment or record certificate':'Record specialist appointment'}</summary>
+ ${rwComplianceEvidence(t)}</details>
+ <p class="mut rw-note">All records are fictional. A document reference alone is not proof of a valid certificate.</p>
+ </div>`;
+ }
+ if(RW_FOCUS.type==='repair'){
+ const j=REPAIRS.jobs.find(x=>String(x.id)===RW_FOCUS.id);
+ return `<h1>Repair review</h1>${back}<div class="card rw-simple-card"><h2>${me(j?.issue||'Repair')}</h2><p class="mut">${me(j?.property||'Property')}</p><p>Status: <b>${me(j?.status||'Unknown')}</b></p><p class="mut">Review the report, safety requirements, contractor evidence and your pre-approved spending limits before making a decision.</p><button class="btn" data-v="repairs">Open this repair in Repairs</button></div>`;
+ }
+ if(RW_FOCUS.type==='application'){
+ const a=RW_OP.applications.find(x=>String(x.id)===RW_FOCUS.id);
+ return `<h1>Tenant application</h1>${back}<div class="card rw-simple-card">${a?rwApplicationCard(a,false):'Application no longer available.'}</div>`;
+ }
+ return `<h1>Review</h1>${back}`;
+}
 function rwLandlordActivity(){
  rwComplianceAutoScan();
- const actions=[],events=[];
- for(const a of RW_OP.applications){
-  if(a.status==='Tenancy active'||a.gates?.decision==='rejected')continue;
-  const missing=rwLetMissing(a);
-  if(a.status==='Reference outcome recorded'&&(!a.gates?.decision||a.gates?.decision===''))actions.push({title:'Applicant awaiting your decision',detail:a.name+' · '+a.property,route:'operations'});
-  else if(missing.length&&a.status!=='Applied')actions.push({title:'Tenancy stage needs evidence',detail:a.property+' · '+missing.join(', '),route:'operations'});
- }
+ const actions=[],progress=[],done=[];
  for(const t of RW_OP.compliance){
-  if(t.status==='Document reviewed (demo declaration)')continue;
-  if(t.status==='Renewal flagged')actions.push({title:'Certificate renewal needs arranging',detail:t.property+' · '+t.kind,route:'operations'});
-  else if(t.status==='Appointment arranged (demo)'&&t.review!=='reviewed')actions.push({title:'Replacement certificate awaiting review',detail:t.property+' · '+t.kind,route:'operations'});
+  const st=rwTaskState(t);
+  const item={title:me(t.kind),detail:me(t.property),id:t.id,type:'compliance',extra:t.appointment?'Appointment: '+me(t.appointment):''};
+  if(st==='action')actions.push({...item,title:'Arrange certificate renewal'});
+  else if(st==='progress')progress.push({...item,title:'Certificate renewal booked'});
+  else done.push({...item,title:'Certificate review recorded'});
  }
  for(const j of REPAIRS.jobs){
-  if(j.status==='Completed'&&!j.paid)actions.push({title:'Contractor invoice awaiting funds or checks',detail:j.property+' · '+j.issue+' · '+gbp(j.invoice||0),route:'operations'});
-  else if(['Reported','Quotes received'].includes(j.status))actions.push({title:'Repair awaiting assessment',detail:j.property+' · '+j.issue,route:'repairs'});
+  if(j.status==='Completed'&&j.paid){done.push({title:'Repair completed and paid',detail:j.property+' · '+j.issue,type:'repair',id:j.id});continue}
+  if(j.status==='Completed'&&!j.paid){actions.push({title:'Invoice needs checking',detail:j.property+' · '+j.issue,type:'repair',id:j.id});continue}
+  if(['Reported','Quotes received'].includes(j.status)){actions.push({title:'Repair needs assessment',detail:j.property+' · '+j.issue,type:'repair',id:j.id});continue}
+  if(j.status!=='Cancelled')progress.push({title:'Repair in progress',detail:j.property+' · '+j.issue,type:'repair',id:j.id});
  }
- for(const x of WALLET.ledger.slice(0,35)){
-  const desc=String(x.description||'');
-  let title=desc;
-  if(/contractor invoice/i.test(desc))title='Approved repair payment recorded';
-  else if(/landlord payout/i.test(desc))title='Automatic landlord payout recorded';
-  else if(/cleared rent/i.test(desc))title='Rent payment received';
-  events.push({title,detail:(x.property||'Property')+' · '+gbp(Math.abs(Number(x.amount)||0))+' · '+(x.at||''),property:x.property||'',date:x.at||''});
+ for(const a of RW_OP.applications){
+  if(a.status==='Tenancy active'){done.push({title:'Demo tenancy activated',detail:a.property,type:'application',id:a.id});continue}
+  if(a.gates?.decision==='rejected')continue;
+  if(a.status==='Applied'||a.status==='Reference requested')progress.push({title:'Application being processed',detail:a.name+' · '+a.property,type:'application',id:a.id});
+  else actions.push({title:'Application needs review',detail:a.name+' · '+a.property,type:'application',id:a.id});
  }
- for(const x of RW_OP.audit.slice(0,30))events.push({title:x.message||'Operations update',detail:x.at||'',property:'',date:x.at||''});
- const cards=P.map(p=>{
-  const recent=WALLET.ledger.filter(x=>x.property===p.addr).slice(0,5);
-  const reserve=walletReserveHeld(p.addr),target=walletReserveTarget(p.addr);
-  return `<div class="card" style="margin-top:12px"><div class="row" style="padding-top:0"><b>${me(p.addr)}</b><span class="chip ${reserve>=target?'ok':'warn'}">Reserve ${gbp(reserve)} / ${gbp(target)}</span></div><p class="mut" style="margin:6px 0">${recent.length?'Recent simulated activity':'No wallet activity recorded yet'}</p>${recent.map(x=>`<div class="row"><span>${me(x.description)}<br><small class="mut">${me(x.at||'')}</small></span><b>${x.amount<0?'−':'+'}${gbp(Math.abs(x.amount))}</b></div>`).join('')}<button class="btn g" data-v="wallet" style="margin-top:10px">View wallet</button></div>`;
- }).join('');
- return `<section aria-label="Landlord activity overview"><div class="card" style="margin:12px 0"><div class="row" style="padding-top:0"><h2 style="margin:0">Your RentWise update</h2><span class="chip ${actions.length?'warn':'ok'}">${actions.length?actions.length+' to review':'No urgent actions'}</span></div><p class="mut">Live summary of records in this browser demo. Nothing here is a real notification, bank payment or verified certificate.</p><div class="grid two"><div><small class="mut">Maintenance reserve held</small><h2>${gbp(P.reduce((n,p)=>n+walletReserveHeld(p.addr),0))}</h2></div><div><small class="mut">Unpaid completed-job invoices</small><h2>${REPAIRS.jobs.filter(j=>j.status==='Completed'&&!j.paid).length}</h2></div></div></div>
- <div class="card" style="margin:12px 0"><h2>Action required (${actions.length})</h2>${actions.length?actions.slice(0,12).map(x=>`<div class="row"><div style="min-width:0;flex:1"><b>${me(x.title)}</b><br><small class="mut">${me(x.detail)}</small></div><button class="btn g" data-v="${x.route}">Review</button></div>`).join(''):'<p class="mut">No outstanding decisions identified from the demo records. RentWise continues to track recorded activity.</p>'}</div>
- <div class="card" style="margin:12px 0"><h2>Recent activity</h2>${events.length?events.slice(0,8).map(x=>`<div class="row"><div><b>${me(x.title)}</b><br><small class="mut">${me(x.detail)}</small></div></div>`).join(''):'<p class="mut">No activity recorded yet. Try a simulated rent payment or maintenance job.</p>'}<button class="btn g" data-v="operations" style="margin-top:10px">Open Operations Hub</button></div><h2 style="margin:20px 0 8px">Property updates</h2>${cards}</section>`;
+ const tile=(x,action)=>`<div class="rw-task"><div style="flex:1;min-width:0"><b>${me(x.title)}</b><small>${me(x.detail)}</small>${x.extra?`<small>${me(x.extra)}</small>`:''}</div><button class="btn g" data-rw-focus="${me(x.type)}" data-rw-id="${me(x.id)}">${action}</button></div>`;
+ const reserve=P.reduce((n,p)=>n+walletReserveHeld(p.addr),0);
+ const paid=REPAIRS.jobs.filter(j=>j.status==='Completed'&&!j.paid).length;
+ const transactions=WALLET.ledger.slice(0,5);
+ return `<section class="rw-newhome">
+ <div class="card rw-hero"><span class="chip ${actions.length?'warn':'ok'}">${actions.length?actions.length+' items to review':'No decisions needed'}</span><h2>${actions.length?'RentWise is looking after your properties':'Everything is running smoothly'}</h2><p>Routine work carries on in the background. You'll only need to review decisions that fall outside your rules.</p>
+ <div class="rw-metrics"><div><small>Maintenance reserves</small><b>${gbp(reserve)}</b></div><div><small>Unpaid invoices</small><b>${paid}</b></div></div></div>
+ <div class="card"><h2>Needs your attention ${actions.length?'('+actions.length+')':''}</h2>${actions.length?actions.slice(0,8).map(x=>tile(x,'Review')).join(''):'<p class="mut">Nothing needs your decision right now.</p>'}</div>
+ <div class="card"><h2>RentWise is handling ${progress.length?'('+progress.length+')':''}</h2>${progress.length?progress.slice(0,8).map(x=>tile(x,'View')).join(''):'<p class="mut">No open tasks in progress.</p>'}</div>
+ <details class="card rw-fold"><summary>Completed work & recent activity</summary>${done.slice(0,6).map(x=>tile(x,'View')).join('')}${transactions.map(x=>`<div class="rw-detail"><span>${me(x.description)}<small>${me(x.property||'')}</small></span><b>${x.amount<0?'−':'+'}${gbp(Math.abs(Number(x.amount)||0))}</b></div>`).join('')||'<p class="mut">No activity yet.</p>'}</details>
+ <h2 class="rw-section-heading">Your properties</h2>${P.map(p=>`<div class="card rw-property"><div><b>${me(p.addr)}</b><small>Maintenance reserve ${gbp(walletReserveHeld(p.addr))} / ${gbp(walletReserveTarget(p.addr))}</small></div><button class="btn g" data-p="${p.id}">Open</button></div>`).join('')}
+ <details class="card rw-fold"><summary>Demo tools & advanced controls</summary><p class="mut">These are optional test screens. Everyday decisions appear above.</p><div class="chips"><button class="btn g" data-v="operations">Operations hub</button><button class="btn g" data-v="wallet">Wallet</button><button class="btn g" data-v="repairs">Repairs</button><button class="btn g" data-v="showcase">Demo tour</button></div></details>
+ <p class="mut rw-note">This dashboard uses fictional records stored in your browser. No real bookings, payments or compliance verification occur.</p></section>`;
 }
-const dash=()=>{const pending=REPAIRS.jobs.filter(j=>['Reported','Quotes received'].includes(j.status)).length;return `<h1>Welcome to RentWise</h1><p class="mut">Your property. Your way. Automated updates and decisions in one place.</p>${rwLandlordActivity()}<div class="grid two" style="margin:12px 0"><div class="card"><h2>🏠 My properties</h2><b>${P.length} example homes</b><p class="mut">One occupied, one available to let.</p><button class="btn" data-v="props">View properties</button></div><div class="card"><h2>🤖 AI letting agent</h2><b>${pending} repair decisions pending</b><p class="mut">Choose exactly what RentWise may approve.</p><button class="btn" data-v="prices">Set my job prices</button></div></div><div class="card"><h2>See RentWise in action</h2><p class="mut">Try the complete tenant → contractor → landlord → wallet journey, or run the 45-day compliance demonstration.</p><div class="chips"><button class="btn" data-v="showcase">Start demo tour</button><button class="btn g" data-v="v12">Compliance renewals</button><button class="btn g" data-v="market">Let a property</button></div></div><div class="card" style="margin-top:12px"><h2>You're in control</h2><p>RentWise can automatically arrange eligible routine jobs within your individual price limits. Anything outside your rules comes back to you.</p><button class="btn g" data-v="repairs">Manage AI permissions</button></div>`};
+const dash=()=>`<h1>Welcome to RentWise</h1><p class="mut">Your property. Your way.</p>${rwLandlordActivity()}`;
+document.addEventListener('click',e=>{const b=e.target.closest('[data-rw-focus]');if(b)rwGoFocus(b.dataset.rwFocus,b.dataset.rwId)});
 const props=()=>`<h1>My properties</h1><p class="mut">${P.length} homes, ${gbp(TOT)} a month in rent. Tap one for details.</p><div class="grid two" style="margin-top:12px">${P.map(p=>{const n=AL.filter(a=>a.p==p).length;return `<div class="card tap" data-p="${p.id}"><div class="row" style="padding:0;border:0"><div><b>${p.addr}</b><br><span class="mut">${p.area}</span></div><b>${gbp(p.rent)}<small class="mut">/mo</small></b></div><p class="mut">${p.type}, ${p.ten}</p><div class="chips" style="margin:8px 0 0">${p.late?`<span class="chip bad">${p.late} days late</span>`:'<span class="chip ok">Rent paid</span>'}${n?`<span class="chip warn">${n} certificate alert${n>1?'s':''}</span>`:'<span class="chip ok">Compliant</span>'}</div></div>`}).join('')}</div>`;
 
 // Property advertising requires a human pre-letting inspection and landlord sign-off.
@@ -783,7 +822,7 @@ document.addEventListener('submit',e=>{
  t.status=t.review==='reviewed'?'Document reviewed (demo declaration)':'Appointment arranged (demo)';rwOpLog('Compliance evidence saved for '+t.property+'; status '+t.status);render();toast('Compliance record saved (demo)');
 });
 document.addEventListener('click',e=>{if(e.target.closest('[data-rw-export]'))rwExportFinance()});
-function render(){rwV14PriceDefaults();refreshCompliance();const V={prices:rwV14PricePage,jobs:jobsPage,inspections:inspectionsPage,statements:statementsPage,manage:()=>groupPage('manage'),money:()=>groupPage('money'),more:()=>groupPage('more'),v12:v12Page,showcase:showcasePage,journey:rwFlowPage,operations:rwOperationsPage,applications:rwApplicationsPage,wallet:walletPage,repairs:repairPage,market:marketPage,dash,props:()=>S.p==null?props():det(),comp,fin,ai,tenant:tenantPage,contractor:contractorPage,inspector:rwInspectorPage};
+function render(){rwV14PriceDefaults();refreshCompliance();const V={prices:rwV14PricePage,jobs:jobsPage,inspections:inspectionsPage,statements:statementsPage,manage:()=>groupPage('manage'),money:()=>groupPage('money'),more:()=>groupPage('more'),v12:v12Page,showcase:showcasePage,journey:rwFlowPage,operations:rwOperationsPage,focus:rwFocusPage,applications:rwApplicationsPage,wallet:walletPage,repairs:repairPage,market:marketPage,dash,props:()=>S.p==null?props():det(),comp,fin,ai,tenant:tenantPage,contractor:contractorPage,inspector:rwInspectorPage};
 $('#nav').innerHTML=`<div class="brand">${logo}<div>RentWise<small>Your property. Your way.</small></div></div>`+(DEMO_ROLE==='landlord'?NAV_MAIN:DEMO_ROLE==='tenant'?[['applications','Applications','M9 11l3 3L22 4'],['tenant','My home','M3 11l9-8 9 8M5 9.5V21h14V9.5M10 21v-6h4v6'],['market','Explore homes','M3 10l9-7 9 7v11H3zM9 21v-8h6v8'] ]:DEMO_ROLE==='inspector'?[['inspector','My visits','M9 11l3 3L22 4'],['inspections','Routine jobs','M9 11l3 3L22 4']]:[['contractor','My jobs','M14 7l3 3-7 7-3-3zM3 21l6-6M16 3l5 5']]).map(n=>`<button class="b ${(S.v===n[0]||NAV_PARENT[S.v]===n[0])?'on':''}" data-v="${n[0]}">${ic(n[2])}${n[1]}</button>`).join('');
 $('#main').innerHTML=`<div class="top">${logo}<div>RentWise<small>Your property. Your way.</small></div></div>`+demoRoleBar()+V[S.v]();
 $('#mod').innerHTML=S.m?modal():'';
