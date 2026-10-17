@@ -95,6 +95,16 @@ body.rw-doc-open{overflow:hidden}
 .rw-field-inner{padding-top:12px}.rw-field-list{display:grid;gap:9px}.rw-field-service{border:1px solid #d9e4e1;border-radius:12px;padding:8px 14px;background:#fff}
 .rw-field-service-body{border-top:1px solid #e3eae8;margin-top:6px;padding:12px 0 4px}.rw-field-service-body .mut{margin:0 0 12px}
 </style>
+<style>
+.rw-journey-list{display:grid;gap:7px;margin:14px 0}
+.rw-journey-step{display:flex;align-items:center;text-align:left;gap:11px;width:100%;border:1px solid var(--line);border-radius:12px;background:var(--card);padding:12px;color:var(--ink);font:inherit;cursor:pointer}
+.rw-journey-step>span:first-child{display:grid;place-items:center;width:29px;height:29px;border-radius:50%;background:#e5eeeb;color:#145b52;font-weight:700;flex-shrink:0}
+.rw-journey-step>span:nth-child(2){flex:1;font-size:14px;font-weight:600}
+.rw-journey-step small{color:var(--mut);font-size:11px}
+.rw-journey-step.done>span:first-child{background:#166d60;color:white}
+.rw-journey-step:disabled{opacity:.55;cursor:not-allowed}
+@media(max-width:500px){.rw-journey-step{gap:8px;padding:10px}.rw-journey-step small{font-size:10px}}
+</style>
 </head><body>
 <div class="demo">RentWise V14 · Investor prototype. Demonstration data only. Nothing is sent or paid.</div>
 <div class="app"><nav id="nav"></nav><main id="main"></main></div><div id="mod"></div>
@@ -105,8 +115,8 @@ const ic=d=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-w
 const logo=`<span class="logo">${ic('M3 11l9-8 9 8M5 9.5V21h14V9.5M10 21v-6h4v6')}</span>`;
 const NAV=[['v12','AI Compliance','M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6zM9 12l2 2 4-4'],['showcase','Demo Tour','M3 5h18v14H3zM7 9h10M7 13h7'],['repairs','AI Repairs','M14 7l3 3-7 7-3-3zM3 21l6-6M16 3l5 5M4 4l4 4'],['market','Marketplace','M3 10l9-7 9 7v11H3zM9 21v-8h6v8'],['dash','Home','M3 11l9-8 9 8M5 9.5V21h14V9.5M10 21v-6h4v6'],['props','Properties','M3 21h18M5 21V8l7-5 7 5v13M9 21v-5h6v5'],['comp','Compliance','M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6zM9 12l2 2 4-4'],['wallet','Wallet','M3 7h18v14H3zM3 11h18M16 16h2'],['fin','Finances','M4 20V11M10 20V4M16 20v-6M22 20H2'],['ai','AI Assistant','M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8zM19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z']];
 const NAV_MAIN=[['dash','Home','M3 11l9-8 9 8M5 9.5V21h14V9.5M10 21v-6h4v6'],['props','Properties','M3 21h18M5 21V8l7-5 7 5v13M9 21v-5h6v5'],['manage','Manage','M14 7l3 3-7 7-3-3zM3 21l6-6M16 3l5 5M4 4l4 4'],['money','Money','M3 7h18v14H3zM3 11h18M16 16h2'],['more','More','M4 6h16M4 12h16M4 18h16']];
-const NAV_GROUPS={manage:[['jobs','Automatic jobs','See renewals, inspections and work in progress'],['inspections','Property inspections','Arrange visits and save inspection reports'],['prices','AI job price list','Set a price and approval rule for each repair'],['repairs','Repairs','Track jobs, quotes and trusted contractors'],['v12','Compliance renewals','Certificates and 45-day monitoring'],['comp','Certificates','View all property certificates'],['ai','AI Assistant','See suggested actions']],money:[['statements','Rental statements','Monthly income, deductions and payouts'],['wallet','Wallet','Tenant rent payments, withdrawals and contractor invoices'],['fin','Finances','Income and expenses']],more:[['market','Marketplace','Browse and list rental homes'],['showcase','Demo Tour','Explore the guided demonstration']]};
-const NAV_PARENT={prices:'manage',jobs:'manage',inspections:'manage',statements:'money',repairs:'manage',v12:'manage',comp:'manage',ai:'manage',wallet:'money',fin:'money',market:'more',showcase:'more'};
+const NAV_GROUPS={manage:[['jobs','Automatic jobs','See renewals, inspections and work in progress'],['inspections','Property inspections','Arrange visits and save inspection reports'],['prices','AI job price list','Set a price and approval rule for each repair'],['repairs','Repairs','Track jobs, quotes and trusted contractors'],['v12','Compliance renewals','Certificates and 45-day monitoring'],['comp','Certificates','View all property certificates'],['ai','AI Assistant','See suggested actions']],money:[['statements','Rental statements','Monthly income, deductions and payouts'],['wallet','Wallet','Tenant rent payments, withdrawals and contractor invoices'],['fin','Finances','Income and expenses']],more:[['market','Marketplace','Browse and list rental homes'],['showcase','Demo Tour','Explore the guided demonstration'],['journey','Connected journeys','See maintenance, inspections, tenant finding and compliance work together']]};
+const NAV_PARENT={prices:'manage',jobs:'manage',inspections:'manage',statements:'money',repairs:'manage',v12:'manage',comp:'manage',ai:'manage',wallet:'money',fin:'money',market:'more',showcase:'more',journey:'more'};
 function groupPage(key){const titles={manage:['Manage','Repairs, compliance and contractors in one place.'],money:['Money','Keep track of rent, payments and expenses.'],more:['More','Explore the other RentWise features.']};return `<h1>${titles[key][0]}</h1><p class="mut">${titles[key][1]}</p><div class="card" style="padding:6px 14px">${NAV_GROUPS[key].map(([route,name,description])=>`<button class="rw-group-link" data-v="${route}"><span><b>${name}</b><small>${description}</small></span><span aria-hidden="true">›</span></button>`).join('')}</div>`}
 const raw=[
 ['14 Hollis Road','Leeds LS6 2BN','2-bed terrace','Amelia Hart',895,'2027-03-12','2029-05-01','2031-02-10','2027-01-20',0,'2027-04-30'],
@@ -518,7 +528,47 @@ function rwOpenExampleDocument(kind,id){
 }
 document.addEventListener('click',e=>{const b=e.target.closest('[data-example-doc]');if(b)rwOpenExampleDocument(b.dataset.exampleDoc,b.dataset.exampleProperty)});
 
-function render(){rwV14PriceDefaults();refreshCompliance();const V={prices:rwV14PricePage,jobs:jobsPage,inspections:inspectionsPage,statements:statementsPage,manage:()=>groupPage('manage'),money:()=>groupPage('money'),more:()=>groupPage('more'),v12:v12Page,showcase:showcasePage,wallet:walletPage,repairs:repairPage,market:marketPage,dash,props:()=>S.p==null?props():det(),comp,fin,ai,tenant:tenantPage,contractor:contractorPage};
+
+// Connected investor journey: all actions are simulated and stored only in this browser.
+const RW_FLOW_KEY='rentwise-connected-journey-v1';
+const RW_FLOW_DEFAULT={repair:0,inspection:0,letting:0,compliance:0,notes:[],issue:'Leaking kitchen tap',quote:65,provider:'RentWise-trained inspector',viewings:0,applications:0,report:false};
+let RW_FLOW={...RW_FLOW_DEFAULT};try{RW_FLOW={...RW_FLOW,...JSON.parse(localStorage.getItem(RW_FLOW_KEY)||'{}')}}catch(e){}
+function rwFlowSave(){try{localStorage.setItem(RW_FLOW_KEY,JSON.stringify(RW_FLOW))}catch(e){}}
+const RW_STEPS={
+ repair:['Tenant reports issue','AI triage and safety review','Contractor quote received','Check landlord approval rules','Contractor completes repair','Invoice evidence verified','Pay from maintenance reserve'],
+ inspection:['Book local inspector','Inspector attends','Condition report recorded','Maintenance actions created'],
+ letting:['Pre-letting inspection','Property ready and advert drafted','Viewings conducted','Application and referencing','Landlord selects tenant','Agreement and deposit arranged','Check-in completed','Rent collection starts'],
+ compliance:['Review expiry dates','Arrange qualified professional','Verify actual certificate','Store record and next renewal']
+};
+function rwFlowStep(k,n){const cur=RW_FLOW[k];if(n>cur+1)return toast('Complete the previous step first');if(n===cur+1){RW_FLOW[k]=n;RW_FLOW.notes.unshift({at:new Date().toLocaleString('en-GB'),message:({repair:'Maintenance',inspection:'Field inspection',letting:'Tenant finding',compliance:'Compliance'}[k])+': '+RW_STEPS[k][n-1]});rwFlowSave();render();toast('Demo step recorded')}else if(n===cur){RW_FLOW[k]=n-1;rwFlowSave();render()}}
+function rwFlowChecklist(k){return `<div class="rw-journey-list">${RW_STEPS[k].map((t,i)=>`<button class="rw-journey-step ${RW_FLOW[k]>i?'done':''}" data-flow-step="${k}" data-flow-index="${i+1}" ${i>RW_FLOW[k]?'disabled':''}><span>${RW_FLOW[k]>i?'✓':i+1}</span><span>${me(t)}</span><small>${RW_FLOW[k]>i?'Recorded':i===RW_FLOW[k]?'Tap to record':'Pending'}</small></button>`).join('')}</div>`}
+function rwFlowPage(){
+ const reserve=walletReserveTarget(P[0].addr),rule=REPAIRS.smartRules?.defaults?.['Leaking tap']||{mode:'ask',limit:0},approved=rule.mode==='auto'&&Number(rule.limit)>=RW_FLOW.quote;
+ return `<h1>Connected RentWise journeys</h1><p class="mut">See how landlord, tenant, inspector and contractor actions connect. Tap each step to simulate progress. All records are fictional and no messages, bookings, referencing, certificates or payments are sent.</p>
+ <div class="card"><h2>1. Tenant report → contractor → payment</h2><p class="mut">Example: tenant reports a leaking kitchen tap. RentWise must check urgency and obtain a suitable quote; high-risk work is never approved by this simulation.</p>
+ <div class="row"><span>Sample quote</span><b>£${RW_FLOW.quote}</b></div><div class="row"><span>Landlord's leaking-tap rule</span><b>${rule.mode==='auto'?'Auto up to £'+rule.limit:'Ask first'}</b></div><div class="row"><span>Approval outcome</span><span class="chip ${approved?'ok':'warn'}">${approved?'Within rule (subject to checks)':'Landlord approval required'}</span></div>
+ ${rwFlowChecklist('repair')}
+ <p class="mut">This walkthrough records a simulated approval and payment milestone; it does not bypass actual repair-job evidence checks or debit the wallet. Use the live demo modules below to exercise those controls.</p>
+ <div class="chips"><button class="btn g" data-v="repairs">Open repair jobs</button><button class="btn g" data-v="prices">Edit approval limits</button><button class="btn g" data-v="wallet">Wallet and reserve (${gbp(reserve)})</button></div></div>
+ <div class="card"><h2>2. Local inspector → condition report → repairs</h2><p class="mut">RentWise representatives are trained for viewings, visual condition inspections, check-ins and check-outs. A detailed visual inspection is not a building survey.</p>${rwFlowChecklist('inspection')}
+ <div class="chips"><button class="btn g" data-v="inspections">Inspection dashboard</button><button class="btn g" data-p="0">Book a £100 visit</button><button class="btn g" data-v="repairs">Maintenance actions</button></div></div>
+ <div class="card"><h2>3. Vacant property → new tenant</h2><p class="mut">An inspection and landlord readiness sign-off precede publishing. Viewing £25, check-in £125 and check-out £100 are optional landlord-paid services.</p>${rwFlowChecklist('letting')}
+ <p class="mut">Referencing, Right to Rent, agreement signing and deposit registration require appropriate real-world providers and human/legal checks. These steps are illustrative, not completed checks.</p>
+ <div class="chips"><button class="btn g" data-p="1">Vacant property</button><button class="btn g" data-v="market">Rental marketplace</button><button class="btn g" data-v="tenant">Tenant experience</button></div></div>
+ <div class="card"><h2>4. Compliance → qualified specialist → verified record</h2><p class="mut">RentWise can monitor dates and prepare reminders; only appropriately competent people can perform and verify regulated safety checks.</p>${rwFlowChecklist('compliance')}
+ <div class="chips"><button class="btn g" data-v="comp">Certificate tracker</button><button class="btn g" data-v="v12">45-day renewals</button></div></div>
+ <div class="card"><h2>5. Investor snapshot · example economics</h2><p class="mut">Illustrative service prices, not a revenue forecast. Contractor compensation, travel, VAT, cancellations, provider fees and customer acquisition must be validated in a real pilot.</p>
+ <div class="grid k4"><div class="card kpi"><span class="mut">Viewing</span><b>£25</b></div><div class="card kpi"><span class="mut">Inspection</span><b>£100</b></div><div class="card kpi"><span class="mut">Check-in</span><b>£125</b></div><div class="card kpi"><span class="mut">Check-out</span><b>£100</b></div></div>
+ <p><b>Core proposition:</b> Low-cost digital management with optional paid physical visits by a locally trained network.</p><div class="chips"><button class="btn g" data-v="fin">Illustrative finances</button><button class="btn g" data-v="statements">Rental statements</button><button class="btn g" data-flow-reset>Reset journey</button></div></div>
+ <div class="card"><h2>Journey activity log</h2>${RW_FLOW.notes.length?RW_FLOW.notes.slice(0,12).map(x=>`<div class="row"><span>${me(x.message)}<br><small class="mut">${me(x.at)}</small></span></div>`).join(''):'<p class="mut">Start a journey above to record demo milestones.</p>'}</div>`;
+}
+document.addEventListener('click',e=>{
+ const b=e.target.closest('[data-flow-step],[data-flow-reset]');if(!b)return;
+ if(b.hasAttribute('data-flow-reset')){RW_FLOW={...RW_FLOW_DEFAULT,notes:[]};rwFlowSave();render();toast('Journey reset');return}
+ rwFlowStep(b.dataset.flowStep,Number(b.dataset.flowIndex));
+});
+
+function render(){rwV14PriceDefaults();refreshCompliance();const V={prices:rwV14PricePage,jobs:jobsPage,inspections:inspectionsPage,statements:statementsPage,manage:()=>groupPage('manage'),money:()=>groupPage('money'),more:()=>groupPage('more'),v12:v12Page,showcase:showcasePage,journey:rwFlowPage,wallet:walletPage,repairs:repairPage,market:marketPage,dash,props:()=>S.p==null?props():det(),comp,fin,ai,tenant:tenantPage,contractor:contractorPage};
 $('#nav').innerHTML=`<div class="brand">${logo}<div>RentWise<small>Your property. Your way.</small></div></div>`+(DEMO_ROLE==='landlord'?NAV_MAIN:DEMO_ROLE==='tenant'?[['tenant','My home','M3 11l9-8 9 8M5 9.5V21h14V9.5M10 21v-6h4v6'],['market','Explore homes','M3 10l9-7 9 7v11H3zM9 21v-8h6v8']]:[['contractor','My jobs','M14 7l3 3-7 7-3-3zM3 21l6-6M16 3l5 5']]).map(n=>`<button class="b ${(S.v===n[0]||NAV_PARENT[S.v]===n[0])?'on':''}" data-v="${n[0]}">${ic(n[2])}${n[1]}</button>`).join('');
 $('#main').innerHTML=`<div class="top">${logo}<div>RentWise<small>Your property. Your way.</small></div></div>`+demoRoleBar()+V[S.v]();
 $('#mod').innerHTML=S.m?modal():'';
