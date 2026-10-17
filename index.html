@@ -166,7 +166,43 @@ const pend=()=>CARDS.filter(c=>!S.st[c.id]).length;
 const kv=a=>`<div class="list">${a.map(r=>`<div class="row"><span class="mut">${r[0]}</span><span style="text-align:right">${r[1]}</span></div>`).join('')}</div>`;
 const rows=(a,f)=>`<div class="list">${a.map(f).join('')}</div>`;
 
-const dash=()=>{const pending=REPAIRS.jobs.filter(j=>['Reported','Quotes received'].includes(j.status)).length;return `<h1>Welcome to RentWise</h1><p class="mut">Two properties. One simple place to manage everything. Investor demonstration — no real payments or bookings.</p><div class="grid two" style="margin:12px 0"><div class="card"><h2>🏠 My properties</h2><b>${P.length} example homes</b><p class="mut">One occupied, one available to let.</p><button class="btn" data-v="props">View properties</button></div><div class="card"><h2>🤖 AI letting agent</h2><b>${pending} repair decisions pending</b><p class="mut">Choose exactly what RentWise may approve.</p><button class="btn" data-v="prices">Set my job prices</button></div></div><div class="card"><h2>See RentWise in action</h2><p class="mut">Try the complete tenant → contractor → landlord → wallet journey, or run the 45-day compliance demonstration.</p><div class="chips"><button class="btn" data-v="showcase">Start demo tour</button><button class="btn g" data-v="v12">Compliance renewals</button><button class="btn g" data-v="market">Let a property</button></div></div><div class="card" style="margin-top:12px"><h2>You're in control</h2><p>RentWise can automatically arrange eligible routine jobs within your individual price limits. Anything outside your rules comes back to you.</p><button class="btn g" data-v="repairs">Manage AI permissions</button></div>`};
+function rwLandlordActivity(){
+ rwComplianceAutoScan();
+ const actions=[],events=[];
+ for(const a of RW_OP.applications){
+  if(a.status==='Tenancy active'||a.gates?.decision==='rejected')continue;
+  const missing=rwLetMissing(a);
+  if(a.status==='Reference outcome recorded'&&(!a.gates?.decision||a.gates?.decision===''))actions.push({title:'Applicant awaiting your decision',detail:a.name+' · '+a.property,route:'operations'});
+  else if(missing.length&&a.status!=='Applied')actions.push({title:'Tenancy stage needs evidence',detail:a.property+' · '+missing.join(', '),route:'operations'});
+ }
+ for(const t of RW_OP.compliance){
+  if(t.status==='Document reviewed (demo declaration)')continue;
+  if(t.status==='Renewal flagged')actions.push({title:'Certificate renewal needs arranging',detail:t.property+' · '+t.kind,route:'operations'});
+  else if(t.status==='Appointment arranged (demo)'&&t.review!=='reviewed')actions.push({title:'Replacement certificate awaiting review',detail:t.property+' · '+t.kind,route:'operations'});
+ }
+ for(const j of REPAIRS.jobs){
+  if(j.status==='Completed'&&!j.paid)actions.push({title:'Contractor invoice awaiting funds or checks',detail:j.property+' · '+j.issue+' · '+gbp(j.invoice||0),route:'operations'});
+  else if(['Reported','Quotes received'].includes(j.status))actions.push({title:'Repair awaiting assessment',detail:j.property+' · '+j.issue,route:'repairs'});
+ }
+ for(const x of WALLET.ledger.slice(0,35)){
+  const desc=String(x.description||'');
+  let title=desc;
+  if(/contractor invoice/i.test(desc))title='Approved repair payment recorded';
+  else if(/landlord payout/i.test(desc))title='Automatic landlord payout recorded';
+  else if(/cleared rent/i.test(desc))title='Rent payment received';
+  events.push({title,detail:(x.property||'Property')+' · '+gbp(Math.abs(Number(x.amount)||0))+' · '+(x.at||''),property:x.property||'',date:x.at||''});
+ }
+ for(const x of RW_OP.audit.slice(0,30))events.push({title:x.message||'Operations update',detail:x.at||'',property:'',date:x.at||''});
+ const cards=P.map(p=>{
+  const recent=WALLET.ledger.filter(x=>x.property===p.addr).slice(0,5);
+  const reserve=walletReserveHeld(p.addr),target=walletReserveTarget(p.addr);
+  return `<div class="card" style="margin-top:12px"><div class="row" style="padding-top:0"><b>${me(p.addr)}</b><span class="chip ${reserve>=target?'ok':'warn'}">Reserve ${gbp(reserve)} / ${gbp(target)}</span></div><p class="mut" style="margin:6px 0">${recent.length?'Recent simulated activity':'No wallet activity recorded yet'}</p>${recent.map(x=>`<div class="row"><span>${me(x.description)}<br><small class="mut">${me(x.at||'')}</small></span><b>${x.amount<0?'−':'+'}${gbp(Math.abs(x.amount))}</b></div>`).join('')}<button class="btn g" data-v="wallet" style="margin-top:10px">View wallet</button></div>`;
+ }).join('');
+ return `<section aria-label="Landlord activity overview"><div class="card" style="margin:12px 0"><div class="row" style="padding-top:0"><h2 style="margin:0">Your RentWise update</h2><span class="chip ${actions.length?'warn':'ok'}">${actions.length?actions.length+' to review':'No urgent actions'}</span></div><p class="mut">Live summary of records in this browser demo. Nothing here is a real notification, bank payment or verified certificate.</p><div class="grid two"><div><small class="mut">Maintenance reserve held</small><h2>${gbp(P.reduce((n,p)=>n+walletReserveHeld(p.addr),0))}</h2></div><div><small class="mut">Unpaid completed-job invoices</small><h2>${REPAIRS.jobs.filter(j=>j.status==='Completed'&&!j.paid).length}</h2></div></div></div>
+ <div class="card" style="margin:12px 0"><h2>Action required (${actions.length})</h2>${actions.length?actions.slice(0,12).map(x=>`<div class="row"><div style="min-width:0;flex:1"><b>${me(x.title)}</b><br><small class="mut">${me(x.detail)}</small></div><button class="btn g" data-v="${x.route}">Review</button></div>`).join(''):'<p class="mut">No outstanding decisions identified from the demo records. RentWise continues to track recorded activity.</p>'}</div>
+ <div class="card" style="margin:12px 0"><h2>Recent activity</h2>${events.length?events.slice(0,8).map(x=>`<div class="row"><div><b>${me(x.title)}</b><br><small class="mut">${me(x.detail)}</small></div></div>`).join(''):'<p class="mut">No activity recorded yet. Try a simulated rent payment or maintenance job.</p>'}<button class="btn g" data-v="operations" style="margin-top:10px">Open Operations Hub</button></div><h2 style="margin:20px 0 8px">Property updates</h2>${cards}</section>`;
+}
+const dash=()=>{const pending=REPAIRS.jobs.filter(j=>['Reported','Quotes received'].includes(j.status)).length;return `<h1>Welcome to RentWise</h1><p class="mut">Your property. Your way. Automated updates and decisions in one place.</p>${rwLandlordActivity()}<div class="grid two" style="margin:12px 0"><div class="card"><h2>🏠 My properties</h2><b>${P.length} example homes</b><p class="mut">One occupied, one available to let.</p><button class="btn" data-v="props">View properties</button></div><div class="card"><h2>🤖 AI letting agent</h2><b>${pending} repair decisions pending</b><p class="mut">Choose exactly what RentWise may approve.</p><button class="btn" data-v="prices">Set my job prices</button></div></div><div class="card"><h2>See RentWise in action</h2><p class="mut">Try the complete tenant → contractor → landlord → wallet journey, or run the 45-day compliance demonstration.</p><div class="chips"><button class="btn" data-v="showcase">Start demo tour</button><button class="btn g" data-v="v12">Compliance renewals</button><button class="btn g" data-v="market">Let a property</button></div></div><div class="card" style="margin-top:12px"><h2>You're in control</h2><p>RentWise can automatically arrange eligible routine jobs within your individual price limits. Anything outside your rules comes back to you.</p><button class="btn g" data-v="repairs">Manage AI permissions</button></div>`};
 const props=()=>`<h1>My properties</h1><p class="mut">${P.length} homes, ${gbp(TOT)} a month in rent. Tap one for details.</p><div class="grid two" style="margin-top:12px">${P.map(p=>{const n=AL.filter(a=>a.p==p).length;return `<div class="card tap" data-p="${p.id}"><div class="row" style="padding:0;border:0"><div><b>${p.addr}</b><br><span class="mut">${p.area}</span></div><b>${gbp(p.rent)}<small class="mut">/mo</small></b></div><p class="mut">${p.type}, ${p.ten}</p><div class="chips" style="margin:8px 0 0">${p.late?`<span class="chip bad">${p.late} days late</span>`:'<span class="chip ok">Rent paid</span>'}${n?`<span class="chip warn">${n} certificate alert${n>1?'s':''}</span>`:'<span class="chip ok">Compliant</span>'}</div></div>`}).join('')}</div>`;
 
 // Property advertising requires a human pre-letting inspection and landlord sign-off.
