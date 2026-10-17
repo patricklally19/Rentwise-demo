@@ -815,7 +815,25 @@ function rwLetMissing(a){
  if(i===6)return [];
  return [];
 }
-function rwApplicationsPage(){return `<h1>Rental applications</h1><p class="mut">Apply to a fictional vacant property and follow the status. No application is submitted to a real landlord or referencing service.</p><div class="card"><h2>Apply for a property</h2><form id="rw-op-apply" class="market-form"><label>Property</label><select name="property">${P.map(p=>`<option>${me(p.addr)}</option>`).join('')}</select><label>Applicant name (fictional)</label><input name="name" required maxlength="70" placeholder="Alex Example"><label>Demo email</label><input name="email" type="email" required maxlength="90" placeholder="alex@example.com"><label>Message</label><textarea name="notes" maxlength="400" rows="2" placeholder="Preferred move-in date, etc."></textarea><button class="btn" type="submit">Submit demo application</button></form></div><div class="card"><h2>Application tracking</h2>${RW_OP.applications.length?RW_OP.applications.slice().reverse().map(a=>rwApplicationCard(a,true)).join(''):'<p class="mut">No demo applications yet.</p>'}</div>`}
+function rwApplicationsPage(){
+ if(DEMO_ROLE==='landlord'){
+  const apps=RW_OP.applications.slice().reverse();
+  const finished=a=>a.status==='Tenancy active'||a.gates?.decision==='rejected';
+  const needs=a=>!finished(a)&&!['Applied','Reference requested'].includes(a.status);
+  const pending=apps.filter(needs),processing=apps.filter(a=>!finished(a)&&!needs(a)),completed=apps.filter(finished);
+  const cards=arr=>arr.map(a=>`<div class="rw-task"><div style="flex:1;min-width:0"><b>${me(a.name)}</b><small>${me(a.property)} · ${me(a.status)}</small></div><button class="btn g" data-rw-focus="application" data-rw-id="${me(a.id)}">View</button></div>`).join('');
+  return `<h1>Tenant applications</h1><p class="mut">Review applications and approve the next steps. Applicants submit their own forms.</p>
+  <section class="rw-newhome"><div class="card"><h2>Needs your attention (${pending.length})</h2>${pending.length?cards(pending):'<p class="mut">No applications need a decision right now.</p>'}</div>
+  <div class="card"><h2>Being processed (${processing.length})</h2>${processing.length?cards(processing):'<p class="mut">No applications currently being processed.</p>'}</div>
+  <details class="card rw-fold"><summary>Completed & declined (${completed.length})</summary>${completed.length?cards(completed):'<p class="mut">No completed applications yet.</p>'}</details>
+  ${apps.length?'':'<div class="card"><h2>No applications yet</h2><p class="mut">When someone applies for an advertised property, their application will appear here. RentWise will help coordinate checks and flag decisions that need your approval.</p></div>'}
+  <p class="mut rw-note">Demo records only. References and Right to Rent checks require appropriate human verification.</p></section>`;
+ }
+ const available=MARKET.listings.filter(l=>l.status==='published');
+ return `<h1>Apply for a home</h1><p class="mut">Tenant experience · fictional applications only. Nothing is sent to a real landlord.</p>
+ <div class="card"><h2>Apply for an advertised property</h2>${available.length?`<form id="rw-op-apply" class="market-form"><label>Available property</label><select name="property" required>${available.map(l=>`<option value="${me(l.address)}">${me(l.address)} · ${me(l.city)}</option>`).join('')}</select><label>Applicant name (fictional)</label><input name="name" required maxlength="70" placeholder="Alex Example"><label>Demo email</label><input name="email" type="email" required maxlength="90" placeholder="alex@example.com"><label>Message</label><textarea name="notes" maxlength="400" rows="2" placeholder="Preferred move-in date, etc."></textarea><button class="btn" type="submit">Submit demo application</button></form>`:'<p class="mut">There are no advertised properties accepting applications in this demo.</p><button class="btn g" data-v="market">Browse homes</button>'}</div>
+ <div class="card"><h2>Application tracking</h2>${RW_OP.applications.length?RW_OP.applications.slice().reverse().map(a=>rwApplicationCard(a,true)).join(''):'<p class="mut">No demo applications yet.</p>'}</div>`;
+}
 // Compliance tasks are generated from existing fictional certificate dates when the app opens.
 function rwComplianceAutoScan(){
  const now=new Date(),today=now.toISOString().slice(0,10);
@@ -882,7 +900,7 @@ function rwOperationsPage(){
  <p class="mut rw-note">Fictional demonstration data only. RentWise does not book specialists, verify documents or transfer money in this prototype.</p>
  </section>`;
 }
-document.addEventListener('submit',e=>{const f=e.target;if(!['rw-op-apply','rw-op-compliance'].includes(f.id))return;e.preventDefault();const d=new FormData(f),id='op-'+Date.now()+'-'+Math.random().toString(36).slice(2,5);if(f.id==='rw-op-apply'){const a={id,property:String(d.get('property')),name:String(d.get('name')).slice(0,70),email:String(d.get('email')).slice(0,90),notes:String(d.get('notes')).slice(0,400),date:new Date().toLocaleDateString('en-GB'),status:'Applied',reference:''};RW_OP.applications.push(a);rwOpLog('Demo application received for '+a.property)}else{const t={id,property:String(d.get('property')),kind:String(d.get('kind')),date:String(d.get('date')),status:'Requested'};RW_OP.compliance.push(t);rwOpLog('Specialist task requested for '+t.property)}render();toast('Saved locally (demo)')});
+document.addEventListener('submit',e=>{const f=e.target;if(!['rw-op-apply','rw-op-compliance'].includes(f.id))return;e.preventDefault();const d=new FormData(f),id='op-'+Date.now()+'-'+Math.random().toString(36).slice(2,5);if(f.id==='rw-op-apply'){if(DEMO_ROLE!=='tenant'||!MARKET.listings.some(l=>l.status==='published'&&l.address===String(d.get('property')))){toast('Select an advertised property from the tenant experience');return}const a={id,property:String(d.get('property')),name:String(d.get('name')).slice(0,70),email:String(d.get('email')).slice(0,90),notes:String(d.get('notes')).slice(0,400),date:new Date().toLocaleDateString('en-GB'),status:'Applied',reference:''};RW_OP.applications.push(a);rwOpLog('Demo application received for '+a.property)}else{const t={id,property:String(d.get('property')),kind:String(d.get('kind')),date:String(d.get('date')),status:'Requested'};RW_OP.compliance.push(t);rwOpLog('Specialist task requested for '+t.property)}render();toast('Saved locally (demo)')});
 document.addEventListener('submit',e=>{
  const f=e.target;if(!f.matches('.rw-let-gates'))return;e.preventDefault();
  const a=RW_OP.applications.find(x=>x.id===f.dataset.letId);if(!a)return;
