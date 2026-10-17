@@ -86,6 +86,15 @@ body.rw-doc-open{overflow:hidden}
 @media(max-width:650px){nav .b{min-width:0!important;flex:1 1 0!important;font-size:11px!important;gap:4px!important;padding:8px 1px!important}nav .b svg{width:23px;height:23px}nav{justify-content:space-around!important}main{padding-bottom:90px}}
 @media print{nav,.rolebar,.demo,.btn,.top{display:none!important}main{max-width:100%;padding:0}body{background:white;color:black}.card{break-inside:avoid}}
 </style>
+<style>
+.rw-field-section>summary,.rw-field-service>summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;min-height:52px;touch-action:manipulation}
+.rw-field-section>summary::-webkit-details-marker,.rw-field-service>summary::-webkit-details-marker{display:none}
+.rw-field-section>summary b{font-size:1.08rem}.rw-field-section summary small,.rw-field-service summary small{display:block;color:#657b77;font-size:.84rem;font-weight:400;margin-top:4px}
+.rw-field-chevron{font-size:1.6rem;color:#286d63;line-height:1;transition:transform .2s;flex-shrink:0}
+.rw-field-section[open]>summary>.rw-field-chevron,.rw-field-service[open]>summary>.rw-field-chevron{transform:rotate(180deg)}
+.rw-field-inner{padding-top:12px}.rw-field-list{display:grid;gap:9px}.rw-field-service{border:1px solid #d9e4e1;border-radius:12px;padding:8px 14px;background:#fff}
+.rw-field-service-body{border-top:1px solid #e3eae8;margin-top:6px;padding:12px 0 4px}.rw-field-service-body .mut{margin:0 0 12px}
+</style>
 </head><body>
 <div class="demo">RentWise V14 · Investor prototype. Demonstration data only. Nothing is sent or paid.</div>
 <div class="app"><nav id="nav"></nav><main id="main"></main></div><div id="mod"></div>
@@ -171,10 +180,11 @@ function rwFieldBookings(p){return RW_FIELD[p.id]||[]}
 function rwFieldSave(p,items){RW_FIELD[p.id]=items;localStorage.setItem(RW_FIELD_KEY,JSON.stringify(RW_FIELD))}
 function rwFieldPanel(p){
  const bookings=rwFieldBookings(p);
- return `<div class="card" style="grid-column:1/-1"><h2>Property visits & field services</h2><p class="mut">Choose to do visits yourself or book a RentWise-trained local representative. No visits are included automatically in the monthly management fee.</p>
- <div class="grid two">${Object.keys(RW_PRICES).map(k=>`<div style="padding:12px;border:1px solid var(--line);border-radius:12px"><b>${RW_NAMES[k]}</b><p class="mut" style="margin:6px 0">${k==='inspection'?'Detailed visual property condition report, photographs and maintenance recommendations. Not a building survey.':k==='viewing'?'Accompanied prospective tenant viewing and feedback.':k==='checkin'?'Inventory, condition photos, meter readings and keys.':'Compare against check-in evidence, record condition, meters and keys.'}</p><div class="row"><b>£${RW_PRICES[k]}</b><button class="btn g" data-field-open="${k}" data-field-property="${p.id}">Arrange</button></div></div>`).join('')}</div>
+ const desc={inspection:'Detailed visual property condition report, photographs and maintenance recommendations. Not a building survey.',viewing:'Accompanied prospective tenant viewing and feedback.',checkin:'Inventory, condition photos, meter readings and keys.',checkout:'Compare against check-in evidence, record condition, meters and keys.'};
+ return `<div class="card" style="grid-column:1/-1"><details class="rw-field-section"><summary><span><b>Property visits & field services</b><small>Viewings, inspections, check-ins and check-outs</small></span><span class="rw-field-chevron">⌄</span></summary><div class="rw-field-inner"><p class="mut">Choose to do visits yourself or book a RentWise-trained local representative. No visits are included automatically in the monthly management fee.</p>
+ <div class="rw-field-list">${Object.keys(RW_PRICES).map(k=>`<details class="rw-field-service"><summary><span><b>${RW_NAMES[k]}</b><small>£${RW_PRICES[k]} · Optional</small></span><span class="rw-field-chevron">⌄</span></summary><div class="rw-field-service-body"><p class="mut">${desc[k]}</p><div class="row"><b>£${RW_PRICES[k]}</b><button class="btn g" data-field-open="${k}" data-field-property="${p.id}">Arrange</button></div></div></details>`).join('')}</div>
  <p class="mut" style="font-size:12px;margin-top:10px">Prices are proposed, before any applicable VAT. No real bookings or payments occur in this demo.</p>
- <h3 style="margin-top:14px">Visit history</h3>${bookings.length?bookings.slice().reverse().map(b=>`<div class="row"><div><b>${RW_NAMES[b.type]}</b><br><span class="mut">${b.provider==='self'?'Landlord (self-reported)':'RentWise-trained inspector (demo)'} · ${me(b.date)} · ${b.status==='complete'?'Completed':'Requested'}</span></div><div class="market-actions">${b.status!=='complete'?`<button class="btn g" data-field-finish="${b.id}" data-field-property="${p.id}">Record completed</button>`:''}${b.type==='inspection'&&b.status==='complete'?`<button class="btn g" data-field-report="${b.id}" data-field-property="${p.id}">View report</button>`:''}</div></div>`).join(''):'<p class="mut">No visits recorded yet.</p>'}</div>`;
+ <h3 style="margin-top:14px">Visit history</h3>${bookings.length?bookings.slice().reverse().map(b=>`<div class="row"><div><b>${RW_NAMES[b.type]}</b><br><span class="mut">${b.provider==='self'?'Landlord (self-reported)':'RentWise-trained inspector (demo)'} · ${me(b.date)} · ${b.status==='complete'?'Completed':'Requested'}</span></div><div class="market-actions">${b.status!=='complete'?`<button class="btn g" data-field-finish="${b.id}" data-field-property="${p.id}">Record completed</button>`:''}${b.type==='inspection'&&b.status==='complete'?`<button class="btn g" data-field-report="${b.id}" data-field-property="${p.id}">View report</button>`:''}</div></div>`).join(''):'<p class="mut">No visits recorded yet.</p>'}</div></details></div>`;
 }
 function rwFieldModal(p,type){
  document.querySelector('.rw-doc-overlay')?.remove();
