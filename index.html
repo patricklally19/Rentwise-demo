@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>RentWise V22 Connected Roles: Your property. Your way.</title>
+<!DOCTYPE html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>RentWise V23 Workflow Tests: Your property. Your way.</title>
 <link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0E5A57"><meta name="description" content="RentWise: Your property. Your way.">
 <link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="RentWise"><meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700&display=swap">
@@ -127,7 +127,7 @@ body.rw-doc-open{overflow:hidden}
 .rw-operations-simple .rw-op-task{align-items:center}.rw-operations-simple .rw-op-copy{min-width:0;flex:1}.rw-operations-simple .rw-op-shortcuts .rw-group-link{padding:14px 2px}.rw-operations-simple .rw-hero{background:var(--soft);color:var(--ink)}.rw-operations-simple .rw-metrics>div{background:var(--card);border-color:var(--line)}.rw-operations-simple .rw-op-advanced>.rw-legacy{margin-top:16px}.rw-operations-simple .rw-legacy>h1,.rw-operations-simple .rw-legacy>p:first-of-type{display:none}.rw-operations-simple .rw-legacy>.grid{margin:12px 0}.rw-operations-simple .rw-legacy>.card{margin:12px 0;padding:16px}.rw-operations-simple .rw-legacy .market-form input,.rw-operations-simple .rw-legacy .market-form select{max-width:100%}.rw-operations-simple .rw-legacy .rw-let-gates{max-width:100%}@media(max-width:480px){.rw-operations-simple .rw-op-task{gap:8px}.rw-operations-simple .rw-op-task .btn{min-width:67px}.rw-operations-simple .rw-op-advanced{overflow-wrap:anywhere}}
  .rw-review-box{border:1px solid var(--line);background:var(--soft);border-radius:12px;padding:14px;margin:14px 0}.rw-review-box p{margin:8px 0 12px}.rw-review-box .btn:disabled{opacity:.5;cursor:not-allowed}.rw-safety-note{font-size:13px;color:var(--mut);border-left:3px solid var(--warn);padding:8px 12px;background:var(--warnb);border-radius:6px}.rw-newhome .rw-task{min-width:0}.rw-newhome .rw-task b{overflow-wrap:anywhere}@media(max-width:420px){.rw-task{flex-wrap:wrap}.rw-task .btn{margin-left:auto}}
 </style></head><body>
-<div class="demo">RentWise V22 · Investor prototype. Demonstration data only. Nothing is sent or paid.</div>
+<div class="demo">RentWise V23 · Investor prototype. Demonstration data only. Nothing is sent or paid.</div>
 <div class="app"><nav id="nav"></nav><main id="main"></main></div><div id="mod"></div>
 <script>
 const $=s=>document.querySelector(s),gbp=n=>'£'+Math.round(n).toLocaleString('en-GB'),T=new Date(new Date().getFullYear(),new Date().getMonth(),new Date().getDate(),12);
@@ -136,8 +136,8 @@ const ic=d=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-w
 const logo=`<span class="logo">${ic('M3 11l9-8 9 8M5 9.5V21h14V9.5M10 21v-6h4v6')}</span>`;
 const NAV=[['v12','AI Compliance','M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6zM9 12l2 2 4-4'],['showcase','Demo Tour','M3 5h18v14H3zM7 9h10M7 13h7'],['repairs','AI Repairs','M14 7l3 3-7 7-3-3zM3 21l6-6M16 3l5 5M4 4l4 4'],['market','Marketplace','M3 10l9-7 9 7v11H3zM9 21v-8h6v8'],['dash','Home','M3 11l9-8 9 8M5 9.5V21h14V9.5M10 21v-6h4v6'],['props','Properties','M3 21h18M5 21V8l7-5 7 5v13M9 21v-5h6v5'],['comp','Compliance','M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6zM9 12l2 2 4-4'],['wallet','Wallet','M3 7h18v14H3zM3 11h18M16 16h2'],['fin','Finances','M4 20V11M10 20V4M16 20v-6M22 20H2'],['ai','AI Assistant','M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8zM19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z']];
 const NAV_MAIN=[['dash','Home','M3 11l9-8 9 8M5 9.5V21h14V9.5M10 21v-6h4v6'],['props','Properties','M3 21h18M5 21V8l7-5 7 5v13M9 21v-5h6v5'],['manage','Manage','M14 7l3 3-7 7-3-3zM3 21l6-6M16 3l5 5M4 4l4 4'],['money','Money','M3 7h18v14H3zM3 11h18M16 16h2'],['more','More','M4 6h16M4 12h16M4 18h16']];
-const NAV_GROUPS={manage:[['operations','Operations hub','Tenant applications, compliance coordination, repair payments and pilot readiness'],['jobs','Automatic jobs','See renewals, inspections and work in progress'],['inspections','Property inspections','Arrange visits and save inspection reports'],['prices','AI job price list','Set a price and approval rule for each repair'],['repairs','Repairs','Track jobs, quotes and trusted contractors'],['v12','Compliance renewals','Certificates and 45-day monitoring'],['comp','Certificates','View all property certificates'],['ai','AI Assistant','See suggested actions']],money:[['statements','Rental statements','Monthly income, deductions and payouts'],['wallet','Wallet','Tenant rent payments, withdrawals and contractor invoices'],['fin','Finances','Income and expenses']],more:[['market','Marketplace','Browse and list rental homes'],['showcase','Demo Tour','Explore the guided demonstration'],['journey','Connected journeys','See maintenance, inspections, tenant finding and compliance work together']]};
-const NAV_PARENT={prices:'manage',jobs:'manage',inspections:'manage',statements:'money',repairs:'manage',v12:'manage',comp:'manage',ai:'manage',wallet:'money',fin:'money',market:'more',showcase:'more',journey:'more',operations:'manage'};
+const NAV_GROUPS={manage:[['operations','Operations hub','Tenant applications, compliance coordination, repair payments and pilot readiness'],['jobs','Automatic jobs','See renewals, inspections and work in progress'],['inspections','Property inspections','Arrange visits and save inspection reports'],['prices','AI job price list','Set a price and approval rule for each repair'],['repairs','Repairs','Track jobs, quotes and trusted contractors'],['v12','Compliance renewals','Certificates and 45-day monitoring'],['comp','Certificates','View all property certificates'],['ai','AI Assistant','See suggested actions']],money:[['statements','Rental statements','Monthly income, deductions and payouts'],['wallet','Wallet','Tenant rent payments, withdrawals and contractor invoices'],['fin','Finances','Income and expenses']],more:[['market','Marketplace','Browse and list rental homes'],['showcase','Demo Tour','Explore the guided demonstration'],['journey','Connected journeys','See maintenance, inspections, tenant finding and compliance work together'],['tests','Workflow test centre','Run safe payment-gate checks and follow the four-role test script']]};
+const NAV_PARENT={prices:'manage',jobs:'manage',inspections:'manage',statements:'money',repairs:'manage',v12:'manage',comp:'manage',ai:'manage',wallet:'money',fin:'money',market:'more',showcase:'more',journey:'more',tests:'more',operations:'manage'};
 function groupPage(key){const titles={manage:['Manage','Repairs, compliance and contractors in one place.'],money:['Money','Keep track of rent, payments and expenses.'],more:['More','Explore the other RentWise features.']};return `<h1>${titles[key][0]}</h1><p class="mut">${titles[key][1]}</p><div class="card" style="padding:6px 14px">${NAV_GROUPS[key].map(([route,name,description])=>`<button class="rw-group-link" data-v="${route}"><span><b>${name}</b><small>${description}</small></span><span aria-hidden="true">›</span></button>`).join('')}</div>`}
 const raw=[
 ['14 Hollis Road','Leeds LS6 2BN','2-bed terrace','Amelia Hart',895,'2027-03-12','2029-05-01','2031-02-10','2027-01-20',0,'2027-04-30'],
@@ -1030,7 +1030,62 @@ document.addEventListener('submit',e=>{
  t.status=t.review==='reviewed'?'Document reviewed (demo declaration)':'Appointment arranged (demo)';rwOpLog('Compliance evidence saved for '+t.property+'; status '+t.status);render();toast('Compliance record saved (demo)');
 });
 document.addEventListener('click',e=>{if(e.target.closest('[data-rw-export]'))rwExportFinance()});
-function render(){rwV14PriceDefaults();refreshCompliance();const V={prices:rwV14PricePage,jobs:jobsPage,inspections:inspectionsPage,statements:statementsPage,manage:()=>groupPage('manage'),money:()=>groupPage('money'),more:()=>groupPage('more'),v12:v12Page,showcase:showcasePage,journey:rwFlowPage,operations:rwOperationsPage,focus:rwFocusPage,applications:rwApplicationsPage,wallet:walletPage,repairs:repairPage,market:marketPage,dash,props:()=>S.p==null?props():det(),comp,fin,ai,tenant:tenantPage,contractor:contractorPage,inspector:rwInspectorPage};
+
+// V23: non-mutating regression tests. Synthetic jobs; no ledger changes, no localStorage changes.
+let RW_V23_RESULTS=null;
+function rwV23Fixture(){
+ const property=P[0].addr, contractor=REPAIRS.contractors.find(c=>c.id==='c1');
+ return {id:'v23-synthetic',property,issue:'Leaking tap',type:'Leaking tap',approvedTask:'Leaking tap',priority:'Routine',status:'Completed',paid:false,contractor:contractor?.id||'c1',approved:40,invoice:40,approvedQuote:{contractor:contractor?.id||'c1',amount:40},approvalType:'Automatic under landlord rules',paymentNeedsApproval:false,paymentApproved:false,invoiceEvidence:'v23-invoice',afterPhoto:'v23-after',evidenceReviewed:true,exceptions:[],events:[]};
+}
+function rwV23Run(){
+ const base=rwV23Fixture(), tests=[];
+ const test=(name,mutate,expectHold)=>{
+  const j=JSON.parse(JSON.stringify(base));mutate(j);
+  let reason='';try{reason=rwPaymentHoldReason(j,false)}catch(e){reason='ERROR: '+e.message}
+  const pass=expectHold?!!reason&&!reason.startsWith('ERROR:'):reason==='' ;
+  tests.push({name,pass,reason:reason||'No hold'});
+ };
+ // Tests that do not require payment authorisation to be enabled in the user's settings.
+ test('Open safety exception blocks payment',j=>{j.exceptions=[{kind:'emergency',title:'Safety concern',status:'Open'}]},true);
+ test('Access exception blocks payment',j=>{j.exceptions=[{kind:'access',title:'Access failed',status:'Open'}]},true);
+ test('Invoice amount above approved amount blocks payment',j=>{j.invoice=90},true);
+ test('Invoice amount below approved amount blocks payment',j=>{j.invoice=30},true);
+ test('Changed contractor blocks payment',j=>{j.contractor='c3'},true);
+ test('Changed job scope blocks payment',j=>{j.type='Boiler replacement'},true);
+ test('Missing completion photo blocks payment',j=>{j.afterPhoto=''},true);
+ test('Missing invoice evidence blocks payment',j=>{j.invoiceEvidence=''},true);
+ test('Unreviewed evidence blocks payment',j=>{j.evidenceReviewed=false},true);
+ test('Pending variation blocks payment',j=>{j.variations=[{status:'Pending'}]},true);
+ test('Workmanship dispute blocks payment',j=>{j.disputed=true},true);
+ test('Manual work approval does not delegate payment',j=>{j.approvalType='Manually approved by landlord';j.paymentNeedsApproval=true},true);
+ test('Payment hold on unverified contractor',j=>{j.contractor='c3';j.approvedQuote.contractor='c3'},true);
+ test('Payment hold on non-routine work',j=>{j.priority='Emergency'},true);
+ test('Payment hold on risk flag',j=>{j.priceFlag=true},true);
+ test('Resolved exception is not treated as open',j=>{j.exceptions=[{kind:'access',title:'Access failed',status:'Resolved'}]},false);
+ // Final test only asserts exception state, because other settings can legitimately hold payment.
+ const resolved=tests.pop();resolved.pass=!rwV21ActiveException({...base,exceptions:[{kind:'access',status:'Resolved'}]});resolved.reason=resolved.pass?'Resolved access exception not open':'Resolved access exception incorrectly open';tests.push(resolved);
+ RW_V23_RESULTS={tests,at:new Date().toLocaleString('en-GB')};return RW_V23_RESULTS;
+}
+function rwV23TestPage(){
+ const r=RW_V23_RESULTS, n=r?.tests.filter(x=>x.pass).length||0;
+ const steps=[
+ ['Tenant','Report a leaking tap with a before photo. Confirm the job is linked to the correct property.'],
+ ['Landlord','Set a trusted plumber and a routine job limit. Check that out-of-budget work needs approval.'],
+ ['Contractor','View only the assigned job, propose access and submit a quote.'],
+ ['Tenant','Confirm the new access appointment; check the access exception closes only after both confirmations.'],
+ ['Contractor','Record completion photos, invoice evidence and the declared total.'],
+ ['Landlord','Review evidence and separately approve an invoice when required.'],
+ ['Landlord','Create an unexpected-cost or safety exception and verify payment remains paused.'],
+ ['Landlord','Check the demo wallet ledger and confirm no actual funds move.']
+ ];
+ return `<h1>Workflow test centre · V23</h1><p class="mut">Test the full repair journey without confusing a demonstration with a live service.</p>
+ <div class="card rw-simple-card"><h2>Automatic safety checks</h2><p class="mut">These checks call the actual payment-hold logic using temporary synthetic job objects. They do not submit repairs, alter your saved jobs or move simulated money.</p><button class="btn" data-rw-v23-run>Run safety checks</button>
+ ${r?`<p style="margin-top:12px"><span class="chip ${n===r.tests.length?'ok':'bad'}">${n}/${r.tests.length} checks passed</span> <small class="mut">${me(r.at)}</small></p><div class="list">${r.tests.map(x=>`<div class="row" style="align-items:flex-start"><div><b>${me(x.name)}</b><br><small class="mut">${me(x.reason)}</small></div><span class="chip ${x.pass?'ok':'bad'}">${x.pass?'PASS':'FAIL'}</span></div>`).join('')}</div>`:'<p class="mut">No tests run yet.</p>'}</div>
+ <div class="card rw-simple-card"><h2>Four-role manual journey</h2><p class="mut">These steps require interaction and cannot be certified by the automatic checks above.</p>${steps.map((x,i)=>`<div class="row" style="align-items:flex-start"><div><b>${i+1}. ${x[0]}</b><p class="mut">${x[1]}</p></div></div>`).join('')}<p class="rw-safety-note">The role selector is not identity authentication. Uploads are not verified, payments are fictional and no external notifications are sent.</p></div>`;
+}
+document.addEventListener('click',e=>{if(!e.target.closest('[data-rw-v23-run]'))return;rwV23Run();render();});
+
+function render(){rwV14PriceDefaults();refreshCompliance();const V={prices:rwV14PricePage,jobs:jobsPage,inspections:inspectionsPage,statements:statementsPage,manage:()=>groupPage('manage'),money:()=>groupPage('money'),more:()=>groupPage('more'),v12:v12Page,showcase:showcasePage,journey:rwFlowPage,tests:rwV23TestPage,operations:rwOperationsPage,focus:rwFocusPage,applications:rwApplicationsPage,wallet:walletPage,repairs:repairPage,market:marketPage,dash,props:()=>S.p==null?props():det(),comp,fin,ai,tenant:tenantPage,contractor:contractorPage,inspector:rwInspectorPage};
 $('#nav').innerHTML=`<div class="brand">${logo}<div>RentWise<small>Your property. Your way.</small></div></div>`+(DEMO_ROLE==='landlord'?NAV_MAIN:DEMO_ROLE==='tenant'?[['applications','Applications','M9 11l3 3L22 4'],['tenant','My home','M3 11l9-8 9 8M5 9.5V21h14V9.5M10 21v-6h4v6'],['market','Explore homes','M3 10l9-7 9 7v11H3zM9 21v-8h6v8'] ]:DEMO_ROLE==='inspector'?[['inspector','My visits','M9 11l3 3L22 4'],['inspections','Routine jobs','M9 11l3 3L22 4']]:[['contractor','My jobs','M14 7l3 3-7 7-3-3zM3 21l6-6M16 3l5 5']]).map(n=>`<button class="b ${(S.v===n[0]||NAV_PARENT[S.v]===n[0])?'on':''}" data-v="${n[0]}">${ic(n[2])}${n[1]}</button>`).join('');
 $('#main').innerHTML=`<div class="top">${logo}<div>RentWise<small>Your property. Your way.</small></div></div>`+demoRoleBar()+V[S.v]();
 $('#mod').innerHTML=S.m?modal():'';
