@@ -176,6 +176,35 @@ function rwTaskState(t){
  if(t.appointment||/Appointment arranged/.test(t.status))return 'progress';
  return 'action';
 }
+
+function rwComplianceStage(t){
+ return `<form class="rw-compliance-book" data-task-id="${me(t.id)}">
+ <label>Specialist / company</label><input name="specialist" required maxlength="100" value="${me(t.specialist||'')}" placeholder="e.g. ABC Gas Services">
+ <label>Appointment date</label><input type="date" name="appointment" required value="${me(t.appointment||'')}">
+ <button class="btn" type="submit">${t.appointment?'Update appointment':'Save appointment'}</button></form>
+ ${t.appointment?`<details class="rw-fold rw-subfold"><summary>After inspection: record replacement certificate</summary><form class="rw-certificate-review" data-task-id="${me(t.id)}"><label>Replacement document reference (demo)</label><input name="reference" maxlength="100" required value="${me(t.reference||'')}" placeholder="e.g. GAS-DEMO-2026"><label>Document review</label><select name="review" required><option value="">Select review status</option><option value="pending" ${t.review==='pending'?'selected':''}>Evidence pending / specialist review needed</option><option value="reviewed" ${t.review==='reviewed'?'selected':''}>Document reviewed manually (demo declaration)</option></select><button class="btn g" type="submit">Save certificate review</button></form></details>`:''}`;
+}
+document.addEventListener('submit',e=>{
+ const f=e.target;
+ if(!f.matches('.rw-compliance-book,.rw-certificate-review'))return;
+ e.preventDefault();
+ const t=RW_OP.compliance.find(x=>String(x.id)===String(f.dataset.taskId));if(!t)return;
+ const d=new FormData(f);
+ if(f.matches('.rw-compliance-book')){
+ const specialist=String(d.get('specialist')||'').trim(),appointment=String(d.get('appointment')||'');
+ if(!specialist||!appointment){toast('Enter the specialist and appointment date');return}
+ t.specialist=specialist.slice(0,100);t.appointment=appointment;t.status='Appointment arranged (demo)';
+ }else{
+ const reference=String(d.get('reference')||'').trim(),review=String(d.get('review')||'');
+ if(!reference||!['pending','reviewed'].includes(review)){toast('Enter a reference and review status');return}
+ t.reference=reference.slice(0,100);t.review=review;t.status=review==='reviewed'?'Document reviewed (demo declaration)':'Evidence pending review';
+ }
+ rwOpLog('Compliance record updated: '+t.property);render();toast('Saved (demo)');
+});
+document.addEventListener('click',e=>{
+ const b=e.target.closest('[data-rw-repair-details]');if(!b)return;
+ repairSelected=b.dataset.rwRepairDetails;repairTab='advanced';S.v='repairs';render();scrollTo(0,0);
+});
 function rwFocusPage(){
  const back='<button class="btn g" data-v="dash">← Back to home</button>';
  if(RW_FOCUS.type==='compliance'){
@@ -190,13 +219,19 @@ function rwFocusPage(){
  <div class="rw-detail"><span>Appointment</span><b>${me(t.appointment||'Not arranged')}</b></div>
  <div class="rw-detail"><span>Certificate expiry</span><b>${me(t.expiry||'Not recorded')}</b></div>
  <details class="rw-fold"><summary>${state==='progress'?'Update appointment or record certificate':'Record specialist appointment'}</summary>
- ${rwComplianceEvidence(t)}</details>
+ ${rwComplianceStage(t)}</details>
  <p class="mut rw-note">All records are fictional. A document reference alone is not proof of a valid certificate.</p>
  </div>`;
  }
  if(RW_FOCUS.type==='repair'){
  const j=REPAIRS.jobs.find(x=>String(x.id)===RW_FOCUS.id);
- return `<h1>Repair review</h1>${back}<div class="card rw-simple-card"><h2>${me(j?.issue||'Repair')}</h2><p class="mut">${me(j?.property||'Property')}</p><p>Status: <b>${me(j?.status||'Unknown')}</b></p><p class="mut">Review the report, safety requirements, contractor evidence and your pre-approved spending limits before making a decision.</p><button class="btn" data-v="repairs">Open this repair in Repairs</button></div>`;
+ if(!j)return `<h1>Repair</h1>${back}<div class="card">Job not found.</div>`;
+ const done=j.paid||j.status==='Paid',waiting=j.status==='Completed'&&!done;
+ return `<h1>${done?'Completed repair':waiting?'Repair completed — payment check': 'Repair update'}</h1>${back}<div class="card rw-simple-card"><h2>${me(j.issue)}</h2><p class="mut">${me(j.property)}</p><span class="chip ${done?'ok':waiting?'warn':'ok'}">${done?'Completed and paid':waiting?'Awaiting payment checks':me(j.status)}</span>
+ <p>${done?'The approved contractor invoice has been marked paid in the demo. No further landlord action is required.':waiting?'The job is marked completed. Payment depends on invoice evidence, agreed amount, approval rules and available funds.':'RentWise is tracking this job. Open the full record to view evidence or make any required decision.'}</p>
+ <div class="rw-detail"><span>Approved amount</span><b>${gbp(j.approved||0)}</b></div><div class="rw-detail"><span>Invoice</span><b>${j.invoice?gbp(j.invoice):'Not received'}</b></div><div class="rw-detail"><span>Payment</span><b>${me(j.paymentStatus||(done?'Paid (demo)':'Not paid'))}</b></div>
+ <button class="btn g" data-rw-repair-details="${me(j.id)}">View job evidence & controls</button>
+ </div>`;
  }
  if(RW_FOCUS.type==='application'){
  const a=RW_OP.applications.find(x=>String(x.id)===RW_FOCUS.id);
@@ -215,7 +250,7 @@ function rwLandlordActivity(){
   else done.push({...item,title:'Certificate review recorded'});
  }
  for(const j of REPAIRS.jobs){
-  if(j.status==='Completed'&&j.paid){done.push({title:'Repair completed and paid',detail:j.property+' · '+j.issue,type:'repair',id:j.id});continue}
+  if(j.paid||j.status==='Paid'){done.push({title:'Repair completed and paid',detail:j.property+' · '+j.issue,type:'repair',id:j.id});continue}
   if(j.status==='Completed'&&!j.paid){actions.push({title:'Invoice needs checking',detail:j.property+' · '+j.issue,type:'repair',id:j.id});continue}
   if(['Reported','Quotes received'].includes(j.status)){actions.push({title:'Repair needs assessment',detail:j.property+' · '+j.issue,type:'repair',id:j.id});continue}
   if(j.status!=='Cancelled')progress.push({title:'Repair in progress',detail:j.property+' · '+j.issue,type:'repair',id:j.id});
@@ -476,7 +511,22 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-wallet-aut
 document.addEventListener('click',e=>{const b=e.target.closest('[data-wallet-clear]');if(!b)return;walletClearRent(b.dataset.walletClear);render();toast('Rent cleared; payout rules applied (demo)')});
 function eligibleAutoPaymentContractor(id,j){const c=REPAIRS.contractors.find(x=>x.id===id);return !!(c&&c.verified&&c.preferred&&eligibleContractor(c,repairTrade(j)))}
 function repairApprove(j,q,automatic){if(!Number.isFinite(q.amount)||q.amount<=0)return;if(j.status==='Approved'||j.status==='Completed'||j.status==='Paid')return;const s=REPAIRS.settings;j.status='Approved';j.type=q.task||j.type;j.approvedTask=j.type;j.approved=rwQuoteAmount(q);j.approvedQuote=q;j.contractor=q.contractor;j.approvalType=automatic?'Automatic under landlord rules':'Manually approved by landlord';j.paymentNeedsApproval=!automatic&&!eligibleAutoPaymentContractor(q.contractor,j); j.paymentApproved=false;s.spent+=rwQuoteAmount(q);repairLog(j,`${j.approvalType}: ${gbp(rwQuoteAmount(q))} total including applicable fees and VAT reserved against monthly budget`);repairSave();if(automatic&&s.notifyAuto)toast('Demo notification: '+j.issue+' automatically approved for '+gbp(rwQuoteAmount(q)))}
+
+function rwRepairState(j){if(j.paid||j.status==='Paid')return 'done';if(j.status==='Completed')return 'invoice';if(['Reported','Quotes received'].includes(j.status))return 'review';return 'progress'}
 function repairPage(){
+ if(repairTab!=='jobs'&&repairTab!=='simple')return repairAdvancedPage();
+ const groups={review:[],progress:[],invoice:[],done:[]};
+ REPAIRS.jobs.forEach(j=>groups[rwRepairState(j)].push(j));
+ const row=(j)=>`<div class="rw-task"><div><b>${me(j.issue)}</b><small>${me(j.property)} · ${j.paid?'Completed and paid':me(j.status)}</small>${j.paid?`<small>Contractor paid ${gbp(j.invoice||0)} (demo)</small>`:''}</div><button class="btn g" data-rw-focus="repair" data-rw-id="${me(j.id)}">View</button></div>`;
+ return `<h1>Repairs</h1><p class="mut">RentWise manages approved jobs in the background. Review only what needs your decision.</p>
+ <section class="rw-newhome">
+ <div class="card"><h2>Needs attention (${groups.review.length+groups.invoice.length})</h2>${[...groups.review,...groups.invoice].map(row).join('')||'<p class="mut">No repair decisions needed.</p>'}</div>
+ <div class="card"><h2>Being handled (${groups.progress.length})</h2>${groups.progress.map(row).join('')||'<p class="mut">No repairs currently in progress.</p>'}</div>
+ <details class="card rw-fold"><summary>Completed and paid (${groups.done.length})</summary>${groups.done.map(row).join('')||'<p class="mut">No completed jobs.</p>'}</details>
+ <details class="card rw-fold"><summary>Report a repair or manage approval rules</summary><p class="mut">The existing full contractor, evidence, budget and approval tools are still available.</p><button class="btn g" data-repair-tab="advanced">Open advanced repair tools</button></details>
+ </section>`;
+}
+function repairAdvancedPage(){
  const s=REPAIRS.settings,j=REPAIRS.jobs.find(x=>x.id===repairSelected)||REPAIRS.jobs[0];
  let h='<h1>AI Repairs Agent</h1><p class="mut">Tenant report → contractor quote → automatic rules → job → invoice → accounts.</p><div class="repair-banner"><b>Investor demo only.</b> Rule-based simulation, not live AI. No messages or payments are sent. Use fictional data only.</div>';
  h+='<div class="chips" style="margin:12px 0">'+[['jobs','Repair jobs'],['smart','Smart repair rules'],['rules','Overall budget'],['contractors','Contractors'],['assignments','Trade assignments'],['accounts','Repair accounts']].map(x=>`<button class="btn ${repairTab===x[0]?'':'g'}" data-repair-tab="${x[0]}">${x[1]}</button>`).join('')+'</div>';
