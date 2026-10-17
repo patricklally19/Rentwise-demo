@@ -106,7 +106,20 @@ body.rw-doc-open{overflow:hidden}
 @media(max-width:500px){.rw-journey-step{gap:8px;padding:10px}.rw-journey-step small{font-size:10px}}
 </style>
 <style>.rw-op-item{padding:12px 0;border-bottom:1px solid var(--line)}.rw-op-item:last-child{border-bottom:0}.rw-op-item p{margin:7px 0}.rw-op-item .row{margin:7px 0}</style>
-</head><body>
+<style>
+.rw-let-gates{display:flex;flex-direction:column;gap:15px;width:100%;min-width:0;margin:16px 0}
+.rw-let-field{display:flex;flex-direction:column;gap:7px;min-width:0;width:100%}
+.rw-let-field label{display:block;font-weight:650;line-height:1.4;margin:0}
+.rw-let-field input,.rw-let-field select{display:block;box-sizing:border-box;width:100%;max-width:100%;min-width:0;min-height:45px;border:1px solid #cbd8d4;border-radius:9px;padding:10px 12px;background:white;color:#193e38;font:inherit;font-size:16px;line-height:1.3}
+.rw-let-field select{white-space:normal;text-overflow:ellipsis}
+.rw-let-gates .btn{align-self:flex-start;max-width:100%;white-space:normal}
+.rw-let-progress{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;margin:17px 0 5px;font-size:13px}
+.rw-let-track{height:7px;background:#e5efeb;border-radius:10px;overflow:hidden;width:100%}
+.rw-let-track i{display:block;height:100%;background:#14766a;border-radius:10px}
+.rw-op-item{min-width:0;overflow-wrap:anywhere}
+.rw-op-item button[disabled]{opacity:.42;cursor:not-allowed;filter:grayscale(.5)}
+@media(max-width:600px){.rw-let-gates{gap:14px}.rw-let-field input,.rw-let-field select{font-size:16px}.rw-op-item{padding-inline:0}}
+</style></head><body>
 <div class="demo">RentWise V14 · Investor prototype. Demonstration data only. Nothing is sent or paid.</div>
 <div class="app"><nav id="nav"></nav><main id="main"></main></div><div id="mod"></div>
 <script>
@@ -634,25 +647,24 @@ for(const a of RW_OP.applications){if(RW_LET_STAGES.indexOf(a.status)>0&&!a.gate
 function rwLetEvidence(a){return a.gates||{}}
 function rwApplicationCard(a,tenant=false){
  const g=rwLetEvidence(a),idx=RW_LET_STAGES.indexOf(a.status),legacy=idx>1&&!a.gates;
- const controls=tenant?'':`<form class="rw-let-gates" data-let-id="${me(a.id)}">
- <p class="mut">Every milestone needs a deliberate record. The demo stores declarations only; it cannot verify identity, legal documents, deposits or third-party results.</p>
- <label>Referencing outcome</label><select name="reference"><option value="">Select outcome</option><option value="satisfactory" ${g.reference==='satisfactory'?'selected':''}>Satisfactory — manually recorded</option><option value="review" ${g.reference==='review'?'selected':''}>Further review required</option><option value="failed" ${g.reference==='failed'?'selected':''}>Unsuccessful</option></select>
- <label>Referencing evidence/reference ID (demo, no sensitive data)</label><input name="referenceId" value="${me(g.referenceId||'')}" placeholder="e.g. REF-DEMO-001">
- <label>Right to Rent check record</label><select name="rightToRent"><option value="">Not recorded</option><option value="recorded" ${g.rightToRent==='recorded'?'selected':''}>Check recorded by responsible person (demo declaration)</option></select>
- <label>Right to Rent evidence/reference ID</label><input name="rightToRentId" value="${me(g.rightToRentId||'')}" placeholder="e.g. RTR-DEMO-001">
- <label>Landlord's explicit selection</label><select name="decision"><option value="">No decision</option><option value="approved" ${g.decision==='approved'?'selected':''}>I approve this applicant</option><option value="rejected" ${g.decision==='rejected'?'selected':''}>I reject this applicant</option></select>
- <label>Agreement</label><select name="agreement"><option value="">Not confirmed</option><option value="signed" ${g.agreement==='signed'?'selected':''}>Both parties' signing recorded (demo declaration)</option></select>
- <label>Agreement record/reference ID</label><input name="agreementId" value="${me(g.agreementId||'')}" placeholder="e.g. AST-DEMO-001">
- <label>Deposit arrangement</label><select name="deposit"><option value="">Not recorded</option><option value="protected" ${g.deposit==='protected'?'selected':''}>Deposit protected and prescribed information recorded (demo declaration)</option><option value="none" ${g.deposit==='none'?'selected':''}>No tenancy deposit taken</option></select>
- <label>Deposit scheme reference (required if protected)</label><input name="depositId" value="${me(g.depositId||'')}" placeholder="e.g. DEP-DEMO-001">
- <label>Check-in</label><select name="checkin"><option value="">Not completed</option><option value="complete" ${g.checkin==='complete'?'selected':''}>Check-in and inventory completion recorded</option></select>
- <label>Check-in report reference</label><input name="checkinId" value="${me(g.checkinId||'')}" placeholder="e.g. INV-DEMO-001">
- <button type="submit" class="btn g">Save evidence and decisions</button></form>`;
+ const field=(title,html)=>`<div class="rw-let-field"><label>${title}</label>${html}</div>`;
+ const input=(name,placeholder)=>`<input name="${name}" value="${me(g[name]||'')}" placeholder="${placeholder}" autocomplete="off">`;
+ const select=(name,options)=>`<select name="${name}">${options.map(([value,label])=>`<option value="${value}" ${g[name]===value?'selected':''}>${label}</option>`).join('')}</select>`;
+ const sections={
+  0:`<p class="mut">Start by requesting references. No outcome can be recorded until the next stage.</p>`,
+  1:field('Referencing outcome',select('reference',[['','Select outcome'],['satisfactory','Satisfactory — manually recorded'],['review','Further review required'],['failed','Unsuccessful']]))+field('Evidence reference (demo ID only)',input('referenceId','e.g. REF-DEMO-001')),
+  2:field('Right to Rent check',select('rightToRent',[['','Not recorded'],['recorded','Responsible person has recorded check']]))+field('Right to Rent evidence reference',input('rightToRentId','e.g. RTR-DEMO-001'))+field('Landlord decision',select('decision',[['','No decision'],['approved','I approve this applicant'],['rejected','I reject this applicant']])),
+  3:field('Tenancy agreement',select('agreement',[['','Not confirmed'],['signed','Both parties signed — demo declaration']]))+field('Agreement record reference',input('agreementId','e.g. AST-DEMO-001')),
+  4:field('Deposit arrangement',select('deposit',[['','Not recorded'],['protected','Protected; prescribed information recorded'],['none','No deposit taken']]))+field('Deposit scheme reference (if applicable)',input('depositId','e.g. DEP-DEMO-001')),
+  5:field('Check-in and inventory',select('checkin',[['','Not completed'],['complete','Check-in and inventory recorded']]))+field('Check-in report reference',input('checkinId','e.g. INV-DEMO-001')),
+  6:`<p class="mut">All preceding declarations have been recorded. Confirm activation only after reviewing the application. This does not activate a real tenancy.</p>`
+ };
+ const controls=tenant?'':`<div class="rw-let-progress"><b>Stage ${Math.max(1,idx+1)} of 8</b><span>${me(a.status)}</span><div class="rw-let-track"><i style="width:${Math.max(0,(idx+1)/8*100)}%"></i></div></div><form class="rw-let-gates" data-let-id="${me(a.id)}"><p class="mut">${idx===0?'Request referencing to begin.':'Only the information required for this stage is shown.'} All entries are unverified demo declarations.</p>${sections[idx]||''}${idx>0&&idx<6?'<button type="submit" class="btn g">Save this stage</button>':''}</form>`;
  const missing=rwLetMissing(a),next=idx<7?RW_LET_STAGES[idx+1]:'';
  return `<div class="rw-op-item"><div class="row"><b>${me(a.name)}</b><span class="chip ${idx===7&&!legacy?'ok':'warn'}">${legacy?'Requires revalidation':me(a.status)}</span></div><p class="mut">${me(a.property)} · ${me(a.email)} · ${me(a.date)}</p><p>${me(a.notes||'No additional details')}</p>
  ${legacy?'<p class="mut"><b>Previous demo progress is not evidence.</b> This application must be revalidated before it can be treated as active.</p>':''}
  ${controls}
- ${!tenant&&idx<7?`<p class="mut">${missing.length?'Next step requirements: '+me(missing.join('; ')):'Evidence recorded for next stage.'}</p><button class="btn" data-let-next="${me(a.id)}" ${missing.length?'disabled':''}>Continue: ${me(next)}</button>`:''}
+ ${!tenant&&idx<7?`<p class="mut">${missing.length?'Next step requirements: '+me(missing.join('; ')):'Evidence recorded for next stage.'}</p><button class="btn" data-let-next="${me(a.id)}" ${missing.length?'disabled aria-disabled="true"':''}>Continue: ${me(next)}</button>`:''}
  ${idx===7?'<p class="mut">Active in local demo only. No real verification, signing, protection or rent collection is performed by this workflow.</p>':''}</div>`;
 }
 function rwLetMissing(a){
@@ -663,7 +675,7 @@ function rwLetMissing(a){
  if(i===3)return g.agreement==='signed'&&g.agreementId?[]:['Signed agreement declaration and reference'];
  if(i===4)return (g.deposit==='none'||g.deposit==='protected'&&g.depositId)?[]:['Deposit protection reference or no-deposit declaration'];
  if(i===5)return g.checkin==='complete'&&g.checkinId?[]:['Check-in/inventory completion and report reference'];
- if(i===6)return ['Final activation confirmation required'];
+ if(i===6)return [];
  return [];
 }
 function rwApplicationsPage(){return `<h1>Rental applications</h1><p class="mut">Apply to a fictional vacant property and follow the status. No application is submitted to a real landlord or referencing service.</p><div class="card"><h2>Apply for a property</h2><form id="rw-op-apply" class="market-form"><label>Property</label><select name="property">${P.map(p=>`<option>${me(p.addr)}</option>`).join('')}</select><label>Applicant name (fictional)</label><input name="name" required maxlength="70" placeholder="Alex Example"><label>Demo email</label><input name="email" type="email" required maxlength="90" placeholder="alex@example.com"><label>Message</label><textarea name="notes" maxlength="400" rows="2" placeholder="Preferred move-in date, etc."></textarea><button class="btn" type="submit">Submit demo application</button></form></div><div class="card"><h2>Application tracking</h2>${RW_OP.applications.length?RW_OP.applications.slice().reverse().map(a=>rwApplicationCard(a,true)).join(''):'<p class="mut">No demo applications yet.</p>'}</div>`}
@@ -679,7 +691,7 @@ document.addEventListener('submit',e=>{const f=e.target;if(!['rw-op-apply','rw-o
 document.addEventListener('submit',e=>{
  const f=e.target;if(!f.matches('.rw-let-gates'))return;e.preventDefault();
  const a=RW_OP.applications.find(x=>x.id===f.dataset.letId);if(!a)return;
- const d=new FormData(f),g={};for(const k of ['reference','referenceId','rightToRent','rightToRentId','decision','agreement','agreementId','deposit','depositId','checkin','checkinId'])g[k]=String(d.get(k)||'').trim().slice(0,100);
+ const d=new FormData(f),g={...(a.gates||{})};for(const [k,v] of d.entries())g[k]=String(v||'').trim().slice(0,100);
  if(g.deposit==='protected'&&!g.depositId){toast('Enter a deposit protection reference');return}
  a.gates=g;
  if(a.status==='Tenancy active'&&a.legacyReview){a.status='Applied';a.legacyReview=false}
