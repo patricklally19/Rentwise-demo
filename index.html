@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>RentWise V23 Workflow Tests: Your property. Your way.</title>
+<!DOCTYPE html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>RentWise V24 Proactive Compliance: Your property. Your way.</title>
 <link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0E5A57"><meta name="description" content="RentWise: Your property. Your way.">
 <link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="RentWise"><meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700&display=swap">
@@ -127,7 +127,7 @@ body.rw-doc-open{overflow:hidden}
 .rw-operations-simple .rw-op-task{align-items:center}.rw-operations-simple .rw-op-copy{min-width:0;flex:1}.rw-operations-simple .rw-op-shortcuts .rw-group-link{padding:14px 2px}.rw-operations-simple .rw-hero{background:var(--soft);color:var(--ink)}.rw-operations-simple .rw-metrics>div{background:var(--card);border-color:var(--line)}.rw-operations-simple .rw-op-advanced>.rw-legacy{margin-top:16px}.rw-operations-simple .rw-legacy>h1,.rw-operations-simple .rw-legacy>p:first-of-type{display:none}.rw-operations-simple .rw-legacy>.grid{margin:12px 0}.rw-operations-simple .rw-legacy>.card{margin:12px 0;padding:16px}.rw-operations-simple .rw-legacy .market-form input,.rw-operations-simple .rw-legacy .market-form select{max-width:100%}.rw-operations-simple .rw-legacy .rw-let-gates{max-width:100%}@media(max-width:480px){.rw-operations-simple .rw-op-task{gap:8px}.rw-operations-simple .rw-op-task .btn{min-width:67px}.rw-operations-simple .rw-op-advanced{overflow-wrap:anywhere}}
  .rw-review-box{border:1px solid var(--line);background:var(--soft);border-radius:12px;padding:14px;margin:14px 0}.rw-review-box p{margin:8px 0 12px}.rw-review-box .btn:disabled{opacity:.5;cursor:not-allowed}.rw-safety-note{font-size:13px;color:var(--mut);border-left:3px solid var(--warn);padding:8px 12px;background:var(--warnb);border-radius:6px}.rw-newhome .rw-task{min-width:0}.rw-newhome .rw-task b{overflow-wrap:anywhere}@media(max-width:420px){.rw-task{flex-wrap:wrap}.rw-task .btn{margin-left:auto}}
 </style></head><body>
-<div class="demo">RentWise V23 · Investor prototype. Demonstration data only. Nothing is sent or paid.</div>
+<div class="demo">RentWise V24 · Investor prototype. Demonstration data only. Nothing is sent or paid.</div>
 <div class="app"><nav id="nav"></nav><main id="main"></main></div><div id="mod"></div>
 <script>
 const $=s=>document.querySelector(s),gbp=n=>'£'+Math.round(n).toLocaleString('en-GB'),T=new Date(new Date().getFullYear(),new Date().getMonth(),new Date().getDate(),12);
@@ -176,7 +176,25 @@ const rows=(a,f)=>`<div class="list">${a.map(f).join('')}</div>`;
 
 const RW_FOCUS={type:'',id:''};
 function rwGoFocus(type,id){RW_FOCUS.type=type;RW_FOCUS.id=String(id||'');S.v='focus';S.p=null;render();scrollTo(0,0)}
+function rwV24LinkedJob(t){
+ if(t.kind!=='Gas safety certificate')return null;
+ return REPAIRS.jobs.find(j=>j.id===t.renewalJob)||REPAIRS.jobs.find(j=>j.property===t.property&&j.type==='Gas safety inspection'&&j.id===V12[t.property]?.job)||null;
+}
+function rwV24GasState(t){
+ const j=rwV24LinkedJob(t);
+ if(!j)return {kind:'action',label:'No renewal job created',job:null};
+ if(j.compliance?.status==='Validated'&&v11GasRecord(t.property))return {kind:'complete',label:'Replacement record reviewed (demo)',job:j};
+ if(j.compliance?.status==='Awaiting landlord review')return {kind:'action',label:'Gas safety record requires human verification',job:j};
+ const id=assignedContractor(t.property,'Gas safety'),c=REPAIRS.contractors.find(x=>x.id===id);
+ if(!id||!eligibleContractor(c,'Gas safety')||!j.invitedContractor||j.invitedContractor!==id)return {kind:'action',label:'Authorised engineer needs assigning or rechecking',job:j};
+ if(rwV21ActiveException(j))return {kind:'action',label:'Safety or access exception requires attention',job:j};
+ if(j.status==='Quotes received')return {kind:'action',label:'Quote needs a landlord decision',job:j};
+ if(j.status==='Completed')return {kind:'action',label:'Certificate and invoice need review',job:j};
+ if(j.status==='Paid')return {kind:'complete',label:'Renewal completed (demo)',job:j};
+ return {kind:'progress',label:j.status==='Approved'?'Engineer authorised · awaiting inspection evidence':'Engineer assigned · simulated invitation queued',job:j};
+}
 function rwTaskState(t){
+ if(t.kind==='Gas safety certificate')return rwV24GasState(t).kind;
  if(t.review==='reviewed'||/Document reviewed/.test(t.status))return 'complete';
  if(t.appointment||/Appointment arranged/.test(t.status))return 'progress';
  return 'action';
@@ -217,9 +235,9 @@ function rwFocusPage(){
  if(!t)return back+'<div class="card">This task is no longer available.</div>';
  const state=rwTaskState(t);
  return `<h1>Gas & certificate renewal</h1><p class="mut">${me(t.property)} · ${me(t.kind)}</p>${back}
- <div class="card rw-simple-card"><span class="chip ${state==='complete'?'ok':state==='progress'?'ok':'warn'}">${state==='complete'?'Document review recorded':state==='progress'?'Appointment recorded · awaiting certificate':'Booking needs arranging'}</span>
- <h2>${state==='progress'?'RentWise is tracking this renewal':state==='complete'?'Review recorded':'Arrange a specialist appointment'}</h2>
- <p class="mut">${state==='progress'?'No further booking action is needed. After the inspection, the replacement certificate must be checked by a responsible person.':'This demo records the next step; it does not contact a specialist or verify certificates.'}</p>
+ <div class="card rw-simple-card"><span class="chip ${state==='complete'?'ok':state==='progress'?'ok':'warn'}">${gas?me(gas.label):state==='complete'?'Document review recorded':state==='progress'?'Appointment recorded · awaiting certificate':'Booking needs arranging'}</span>
+ <h2>${gas&&state==='progress'?'RentWise is coordinating this renewal (demo)':state==='progress'?'RentWise is tracking this renewal':state==='complete'?'Review recorded':'Arrange a specialist appointment'}</h2>
+ <p class="mut">${gas&&state==='progress'?'The authorised engineer can see the renewal job in the contractor workspace. The invitation is simulated, not sent. Tenant access and the certificate still require checks.':state==='progress'?'No further booking action is needed. After the inspection, the replacement certificate must be checked by a responsible person.':'This demo records the next step; it does not contact a specialist or verify certificates.'}</p>
  <div class="rw-detail"><span>Specialist</span><b>${me(t.specialist||'Not recorded')}</b></div>
  <div class="rw-detail"><span>Appointment</span><b>${me(t.appointment||'Not arranged')}</b></div>
  <div class="rw-detail"><span>Certificate expiry</span><b>${me(t.expiry||'Not recorded')}</b></div>
@@ -283,6 +301,7 @@ function rwLandlordActivity(){
  <p class="mut rw-note">This dashboard uses fictional records stored in your browser. No real bookings, payments or compliance verification occur.</p></section>`;
 }
 const dash=()=>`<h1>Welcome to RentWise</h1><p class="mut">Your property. Your way.</p>${rwLandlordActivity()}`;
+document.addEventListener('click',e=>{const b=e.target.closest('[data-rw-v24-job]');if(!b)return;repairSelected=b.dataset.rwV24Job;repairTab='jobs';DEMO_ROLE='landlord';S.v='repairs';render();scrollTo(0,0)});
 document.addEventListener('click',e=>{const b=e.target.closest('[data-rw-focus]');if(b)rwGoFocus(b.dataset.rwFocus,b.dataset.rwId)});
 const props=()=>`<h1>My properties</h1><p class="mut">${P.length} homes, ${gbp(TOT)} a month in rent. Tap one for details.</p><div class="grid two" style="margin-top:12px">${P.map(p=>{const n=AL.filter(a=>a.p==p).length;return `<div class="card tap" data-p="${p.id}"><div class="row" style="padding:0;border:0"><div><b>${p.addr}</b><br><span class="mut">${p.area}</span></div><b>${gbp(p.rent)}<small class="mut">/mo</small></b></div><p class="mut">${p.type}, ${p.ten}</p><div class="chips" style="margin:8px 0 0">${p.late?`<span class="chip bad">${p.late} days late</span>`:'<span class="chip ok">Rent paid</span>'}${n?`<span class="chip warn">${n} certificate alert${n>1?'s':''}</span>`:'<span class="chip ok">Compliant</span>'}</div></div>`}).join('')}</div>`;
 
@@ -933,13 +952,15 @@ function rwApplicationsPage(){
 }
 // Compliance tasks are generated from existing fictional certificate dates when the app opens.
 function rwComplianceAutoScan(){
+ v12Scan();
  const now=new Date(),today=now.toISOString().slice(0,10);
  for(const x of ALL){
   if(x.d>45)continue;
   const key=x.p.addr+'|'+x.k+'|'+x.s;
-  if(RW_OP.compliance.some(t=>t.autoKey===key))continue;
+  const existing=RW_OP.compliance.find(t=>t.autoKey===key);
+  if(existing){if(x.k===0&&v12Job(x.p)&&existing.renewalJob!==v12Job(x.p).id){existing.renewalJob=v12Job(x.p).id;rwOpSave()}continue;}
   const kind=['Gas safety certificate','Electrical installation condition report','Energy performance certificate','Other specialist inspection'][x.k]||'Specialist inspection';
-  RW_OP.compliance.push({id:'auto-'+Date.now()+'-'+x.k+'-'+Math.random().toString(36).slice(2,5),property:x.p.addr,kind,date:today,status:'Renewal flagged',autoKey:key,expiry:x.s,createdAt:today,source:'Automatic 45-day scan (when demo opened)'});
+  RW_OP.compliance.push({id:'auto-'+Date.now()+'-'+x.k+'-'+Math.random().toString(36).slice(2,5),property:x.p.addr,kind,date:today,status:'Renewal flagged',autoKey:key,expiry:x.s,createdAt:today,source:'Automatic 45-day scan (when demo opened)',renewalJob:x.k===0?v12Job(x.p)?.id||'':''});
   rwOpLog('Renewal task automatically created: '+kind+' at '+x.p.addr);
  }
 }
