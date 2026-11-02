@@ -295,7 +295,8 @@ function rwLandlordActivity(){
  return `<section class="rw-newhome">
  <div class="card rw-hero"><span class="chip ${actions.length?'warn':'ok'}">${actions.length?actions.length+' items to review':'No decisions needed'}</span><h2>${actions.length?'RentWise is looking after your properties':'Everything is running smoothly'}</h2><p>Routine work carries on in the background. You'll only need to review decisions that fall outside your rules.</p>
  <div class="rw-metrics"><div><small>Maintenance reserves</small><b>${gbp(reserve)}</b></div><div><small>Unpaid invoices</small><b>${paid}</b></div></div></div>
- <div class="card"><h2>Needs your attention ${actions.length?'('+actions.length+')':''}</h2>${actions.length?actions.slice(0,8).map(x=>tile(x,'Review')).join(''):'<p class="mut">Nothing needs your decision right now.</p>'}</div>
+   ${rw27HomeSummary()}
+<div class="card"><h2>Needs your attention ${actions.length?'('+actions.length+')':''}</h2>${actions.length?actions.slice(0,8).map(x=>tile(x,'Review')).join(''):'<p class="mut">Nothing needs your decision right now.</p>'}</div>
  <div class="card"><h2>RentWise is handling ${progress.length?'('+progress.length+')':''}</h2>${progress.length?progress.slice(0,8).map(x=>tile(x,'View')).join(''):'<p class="mut">No open tasks in progress.</p>'}</div>
  <details class="card rw-fold"><summary>Completed work & recent activity</summary>${done.slice(0,6).map(x=>tile(x,'View')).join('')}${transactions.map(x=>`<div class="rw-detail"><span>${me(x.description)}<small>${me(x.property||'')}</small></span><b>${x.amount<0?'−':'+'}${gbp(Math.abs(Number(x.amount)||0))}</b></div>`).join('')||'<p class="mut">No activity yet.</p>'}</details>
  <h2 class="rw-section-heading">Your properties</h2>${P.map(p=>`<div class="card rw-property"><div><b>${me(p.addr)}</b><small>Maintenance reserve ${gbp(walletReserveHeld(p.addr))} / ${gbp(walletReserveTarget(p.addr))}</small></div><button class="btn g" data-p="${p.id}">Open</button></div>`).join('')}
@@ -1152,6 +1153,7 @@ function rw25CaseCard(c){
  <div class="row" style="border:0;padding-top:0"><b>${me(st.type.label)}</b><span class="chip ${urgent?'bad':'warn'}">${me(rw25Status(c))}</span></div>
  <p class="mut">${me(c.property)} · ${me(c.created)} · ${me(c.reporter)}</p><p>${me(c.description)}</p>
  ${urgent?'<p class="rw-safety-note"><b>Safety escalation:</b> This demo cannot call emergency services, notify anyone or dispatch a contractor. Urgent matters need immediate real-world action.</p>':''}
+ ${rw27CaseLink(c)}
  <details class="rw-fold"><summary>Evidence, suggested response & decision</summary>
  <p class="mut">Suggested workflow: ${st.restricted?'Human review required; no binding decisions or external actions.':st.canAuto?'Routine response permitted by this property’s demo settings; no message is actually sent.':'Prepare draft for landlord review.'}</p>
  <div class="draft">${me(rw25Draft(c))}</div>
@@ -1236,6 +1238,57 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-rw25-actio
  if(b.dataset.rw25Action==='approve'){if(c.status==='closed')return;c.status='approved';rw25Audit('Landlord approved draft only; not sent · '+c.property)}
  else if(b.dataset.rw25Action==='close'){c.status='closed';rw25Audit('Landlord marked case resolved · '+c.property)}
  rw25Save();render();toast('Decision recorded (demo only)');
+});
+
+
+/* V27: deterministic connected demonstration. No AI service or external actions. */
+function rw27FindJob(c){return REPAIRS.jobs.find(j=>j.id===c.jobId)||null}
+function rw27CasePolicy(c){
+ const r=rw25Rules(c.property),preset=rw26Preset(r),rule=r[c.type]||'draft';
+ const safety=['emergency','condition'].includes(c.type);
+ const sensitive=['dispute','arrears','legal','negotiation','complaint'].includes(c.type);
+ return {preset,rule,safety,sensitive,autoRoutine:c.type==='routine'&&preset==='managed'&&rule==='auto'};
+}
+function rw27CaseLink(c){
+ const policy=rw27CasePolicy(c),job=rw27FindJob(c);
+ const canCreate=['condition','emergency','complaint'].includes(c.type);
+ return `<div class="rw-review-box"><b>Connected workflow</b>
+ <p class="mut">Property rule: ${me(policy.preset==='managed'?'AI managed':policy.preset==='manual'?'Manual control':'AI with approval')} · ${me(policy.rule==='alert'?'Escalate':policy.rule==='auto'?'Permitted routine handling':'Draft for review')}</p>
+ <p>${policy.safety?'Safety concern: immediate real-world escalation may be required. No automated dispatch.':policy.sensitive?'Human review required before any binding decision or sensitive message.':policy.autoRoutine?'Routine response is within the selected communication setting, but this demo sends nothing.':'RentWise prepares information; no message is sent.'}</p>
+ ${job?`<p><b>Linked maintenance job:</b> ${me(job.issue)} · ${me(job.status)} · ${me(job.id)}</p><p class="mut">Contractor quotes and spending are governed by the existing repair approval rules, not the communication preset.</p><button class="btn g" data-rw27-job="${me(job.id)}">Open linked repair</button>`:
+ canCreate&&c.status!=='closed'?`<p class="mut">A repair can be opened for diagnosis. This does not invite a contractor, approve a quote or make a payment.</p><button class="btn g" data-rw27-create="${me(c.id)}">Create linked repair report</button>`:
+ '<p class="mut">No maintenance job linked to this case.</p>'}
+ ${policy.safety?'<p class="rw-safety-note">For immediate danger, use emergency services and appropriate emergency contacts. This browser demo cannot respond in real time.</p>':''}
+ </div>`;
+}
+function rw27HomeSummary(){
+ const open=RW25.cases.filter(c=>c.status!=='closed');
+ if(!open.length)return '';
+ const attention=open.filter(c=>{const p=rw27CasePolicy(c);return p.safety||p.sensitive||!p.autoRoutine||!rw27FindJob(c)}).length;
+ const handling=open.length-attention;
+ return `<div class="card"><h2>Tenant concerns & resolutions</h2>
+ <p class="mut">${attention} need landlord review or safety escalation · ${handling} routine case${handling===1?'':'s'} within AI preferences (simulation)</p>
+ ${open.slice(-3).reverse().map(c=>`<div class="rw-detail"><span>${me((RW25_TYPES[c.type]||RW25_TYPES.complaint).label)}<small>${me(c.property)}</small></span><b>${rw27FindJob(c)?'Linked repair':'Review'}</b></div>`).join('')}
+ <button class="btn g" data-v="resolution">Open Resolution Hub</button></div>`;
+}
+document.addEventListener('click',e=>{
+ const create=e.target.closest('[data-rw27-create]');
+ if(create){
+  const c=RW25.cases.find(x=>x.id===create.dataset.rw27Create);
+  if(!c||c.status==='closed'||c.jobId||!['condition','emergency','complaint'].includes(c.type))return;
+  const issue=c.type==='condition'?'Reported damp or building condition':c.type==='emergency'?'Urgent reported safety issue':'Tenant complaint requiring property assessment';
+  const job={id:'rw27-'+Date.now(),property:c.property,issue,reportCategory:'Other',needsDiagnosis:true,
+   priority:c.type==='emergency'?'Emergency':'Routine',description:c.description.slice(0,500),status:'Reported',quotes:[],
+   contractor:'',approved:0,invoice:0,paid:false,events:[{at:new Date().toLocaleString('en-GB'),
+   message:'Created from Resolution Hub case '+c.id+' (demo). No contractor contacted or expenditure authorised.'}]};
+  job.type=repairType(issue);
+  REPAIRS.jobs.push(job);c.jobId=job.id;
+  repairSave();rw25Audit('Created linked repair '+job.id+' for '+c.property+'; no dispatch or payment');
+  rw25Save();render();toast('Linked repair created — awaiting assessment (demo)');return;
+ }
+ const open=e.target.closest('[data-rw27-job]');
+ if(open){const j=REPAIRS.jobs.find(x=>x.id===open.dataset.rw27Job);if(!j)return;
+  repairSelected=j.id;repairTab='jobs';DEMO_ROLE='landlord';S.v='repairs';render();scrollTo(0,0)}
 });
 
 function render(){rwV14PriceDefaults();refreshCompliance();const V={resolution:rwResolutionPage,controls:rwControlsPage,prices:rwV14PricePage,jobs:jobsPage,inspections:inspectionsPage,statements:statementsPage,manage:()=>groupPage('manage'),money:()=>groupPage('money'),more:()=>groupPage('more'),v12:v12Page,showcase:showcasePage,journey:rwFlowPage,tests:rwV23TestPage,operations:rwOperationsPage,focus:rwFocusPage,applications:rwApplicationsPage,wallet:walletPage,repairs:repairPage,market:marketPage,dash,props:()=>S.p==null?props():det(),comp,fin,ai,tenant:tenantPage,contractor:contractorPage,inspector:rwInspectorPage};
