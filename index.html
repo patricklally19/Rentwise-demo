@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>RentWise V25 Landlord Control & Resolution: Your property. Your way.</title>
+<!DOCTYPE html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>RentWise V26 Landlord Control & Resolution: Your property. Your way.</title>
 <link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0E5A57"><meta name="description" content="RentWise: Your property. Your way.">
 <link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="RentWise"><meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700&display=swap">
@@ -126,8 +126,10 @@ body.rw-doc-open{overflow:hidden}
 </style><style>
 .rw-operations-simple .rw-op-task{align-items:center}.rw-operations-simple .rw-op-copy{min-width:0;flex:1}.rw-operations-simple .rw-op-shortcuts .rw-group-link{padding:14px 2px}.rw-operations-simple .rw-hero{background:var(--soft);color:var(--ink)}.rw-operations-simple .rw-metrics>div{background:var(--card);border-color:var(--line)}.rw-operations-simple .rw-op-advanced>.rw-legacy{margin-top:16px}.rw-operations-simple .rw-legacy>h1,.rw-operations-simple .rw-legacy>p:first-of-type{display:none}.rw-operations-simple .rw-legacy>.grid{margin:12px 0}.rw-operations-simple .rw-legacy>.card{margin:12px 0;padding:16px}.rw-operations-simple .rw-legacy .market-form input,.rw-operations-simple .rw-legacy .market-form select{max-width:100%}.rw-operations-simple .rw-legacy .rw-let-gates{max-width:100%}@media(max-width:480px){.rw-operations-simple .rw-op-task{gap:8px}.rw-operations-simple .rw-op-task .btn{min-width:67px}.rw-operations-simple .rw-op-advanced{overflow-wrap:anywhere}}
  .rw-review-box{border:1px solid var(--line);background:var(--soft);border-radius:12px;padding:14px;margin:14px 0}.rw-review-box p{margin:8px 0 12px}.rw-review-box .btn:disabled{opacity:.5;cursor:not-allowed}.rw-safety-note{font-size:13px;color:var(--mut);border-left:3px solid var(--warn);padding:8px 12px;background:var(--warnb);border-radius:6px}.rw-newhome .rw-task{min-width:0}.rw-newhome .rw-task b{overflow-wrap:anywhere}@media(max-width:420px){.rw-task{flex-wrap:wrap}.rw-task .btn{margin-left:auto}}
+</style><style>/* V26 simple landlord-first control presets */
+.rw26-presets{display:grid;gap:10px;margin:14px 0 18px}.rw26-choice{display:flex!important;align-items:flex-start;gap:12px;border:1px solid var(--line);border-radius:12px;padding:14px;background:var(--card);margin:0!important;cursor:pointer}.rw26-choice:has(input:checked){border:2px solid var(--brand);background:var(--soft)}.rw26-choice input{width:21px!important;min-width:21px!important;height:21px;margin:3px 0!important;accent-color:var(--brand)}.rw26-choice span{flex:1}.rw26-choice b{display:block;font-size:16px}.rw26-choice small{display:block;font-weight:400;color:var(--mut);font-size:13px;line-height:1.5;margin-top:4px}.rw26-advanced{margin:14px 0!important}.rw26-form>.btn{margin-top:10px}
 </style></head><body>
-<div class="demo">RentWise V25 · Investor prototype. Demonstration data only. Nothing is sent or paid.</div>
+<div class="demo">RentWise V26 · Investor prototype. Demonstration data only. Nothing is sent or paid.</div>
 <div class="app"><nav id="nav"></nav><main id="main"></main></div><div id="mod"></div>
 <script>
 const $=s=>document.querySelector(s),gbp=n=>'£'+Math.round(n).toLocaleString('en-GB'),T=new Date(new Date().getFullYear(),new Date().getMonth(),new Date().getDate(),12);
@@ -1157,23 +1159,49 @@ function rw25CaseCard(c){
  <div class="chips">${c.status!=='closed'?`<button class="btn g" data-rw25-action="approve" data-rw25-id="${me(c.id)}">Approve draft only</button><button class="btn g" data-rw25-action="close" data-rw25-id="${me(c.id)}">Mark resolved</button>`:''}</div>
  </details></div>`;
 }
+function rw26Preset(r){
+ if(r.preset)return r.preset;
+ if(r.mode==='assist'&&r.routine==='auto')return 'managed';
+ if(r.mode==='review'&&Object.keys(RW25_TYPES).every(k=>r[k]==='alert'))return 'manual';
+ return 'approval';
+}
+function rw26PresetRules(preset){
+ const rules={mode:preset==='managed'?'assist':'review',preset};
+ for(const k of Object.keys(RW25_TYPES))rules[k]=preset==='manual'?'alert':(k==='emergency'||k==='condition'?'alert':'draft');
+ if(preset==='managed')rules.routine='auto';
+ return rules;
+}
 function rwControlsPage(){
- return `<h1>AI Control Centre</h1><p class="mut">Every property has its own rules. The landlord decides what RentWise may draft, flag or handle. These demonstration settings never send messages, book contractors or move money.</p>
- ${P.map(p=>{const r=rw25Rules(p.addr);return `<details class="card rw-fold" style="margin:12px 0"><summary>${me(p.addr)} · ${r.mode==='assist'?'Routine assistance enabled':'Approval-first'}</summary>
- <form class="market-form" data-rw25-rules="${me(p.addr)}">
- <label>Overall communication preference</label><select name="mode"><option value="review" ${r.mode==='review'?'selected':''}>Approval-first (recommended)</option><option value="assist" ${r.mode==='assist'?'selected':''}>Allow permitted routine assistance</option></select>
+ return `<h1>AI Control Centre</h1><p class="mut">Choose how hands-on you want to be. Each property keeps its own rules, and you can fine-tune them whenever you wish.</p>
+ <div class="rw-safety-note">This is a browser-only demo. No tenant messages, contractor bookings or payments happen here. Repair spending rules and payment safety gates remain unchanged.</div>
+ ${P.map(p=>{const r=rw25Rules(p.addr),preset=rw26Preset(r);return `<details class="card rw-fold" style="margin:12px 0" ${P.length===1?'open':''}><summary>${me(p.addr)} · ${preset==='managed'?'AI handles routine work':preset==='manual'?'Manual control':'AI prepares, you approve'}</summary>
+ <form class="market-form rw26-form" data-rw25-rules="${me(p.addr)}">
+ <h2 style="margin-top:14px">How much should RentWise handle?</h2>
+ <div class="rw26-presets" role="group" aria-label="Automation level">
+ <label class="rw26-choice"><input type="radio" name="preset" value="managed" ${preset==='managed'?'checked':''}><span><b>AI managed</b><small>Let AI handle permitted routine communications. You still approve sensitive, legal and financial decisions.</small></span></label>
+ <label class="rw26-choice"><input type="radio" name="preset" value="approval" ${preset==='approval'?'checked':''}><span><b>AI with approval</b><small>AI prepares responses and next steps; you decide what goes ahead.</small></span></label>
+ <label class="rw26-choice"><input type="radio" name="preset" value="manual" ${preset==='manual'?'checked':''}><span><b>Manual control</b><small>AI flags issues and provides information, but you make the decisions.</small></span></label>
+ </div>
+ <details class="rw-fold rw-subfold rw26-advanced"><summary>Customise individual rules (optional)</summary>
+ <p class="mut">Changing a preset updates the options below. You can then adjust each type of issue separately.</p>
  ${Object.entries(RW25_TYPES).map(([key,t])=>`<label>${me(t.label)}</label><select name="${key}">
- <option value="alert" ${r[key]==='alert'?'selected':''}>Flag and escalate — no draft action</option>
- <option value="draft" ${r[key]==='draft'?'selected':''}>Prepare a draft for landlord review</option>
- ${key==='routine'?`<option value="auto" ${r[key]==='auto'?'selected':''}>Allow routine auto-response (future live feature; simulated only)</option>`:''}
+ <option value="alert" ${r[key]==='alert'?'selected':''}>Flag for my attention</option>
+ <option value="draft" ${r[key]==='draft'?'selected':''}>Prepare draft for my approval</option>
+ ${key==='routine'?`<option value="auto" ${r[key]==='auto'?'selected':''}>Handle routine reply within my rules (simulation)</option>`:''}
  </select>`).join('')}
- <label>Emergency contact instructions (for landlord reference)</label><textarea name="emergencyContact" maxlength="400" placeholder="Trusted contacts and escalation instructions">${me(r.emergencyContact)}</textarea>
- <label>Additional landlord instructions</label><textarea name="notes" maxlength="500" placeholder="Rules specific to this property">${me(r.notes)}</textarea>
- <button class="btn" type="submit">Save property rules (demo)</button>
- <p class="rw-safety-note">Legal decisions, disputes, financial commitments, sensitive communications and safety matters always require human review or escalation. Existing repair and payment approval gates remain separate and unchanged.</p>
+ <label>Emergency contact instructions</label><textarea name="emergencyContact" maxlength="400" placeholder="Trusted contacts and escalation instructions">${me(r.emergencyContact)}</textarea>
+ <label>Other property instructions</label><textarea name="notes" maxlength="500" placeholder="Rules specific to this property">${me(r.notes)}</textarea>
+ </details>
+ <button class="btn" type="submit">Save my AI preferences</button>
+ <p class="rw-safety-note">No setting overrides the landlord's contractor limits, approval conditions or payment safeguards. Emergencies require real-world safety escalation. Legal decisions and binding agreements require appropriate human review.</p>
  </form></details>`}).join('')}
  <button class="btn g" data-v="resolution">Open Resolution Hub</button>`;
 }
+document.addEventListener('change',e=>{
+ const input=e.target;if(!input.matches('.rw26-form input[name="preset"]'))return;
+ const f=input.closest('form'),rules=rw26PresetRules(input.value);
+ for(const k of Object.keys(RW25_TYPES)){const el=f.elements.namedItem(k);if(el)el.value=rules[k]}
+});
 function rwResolutionPage(){
  const active=RW25.cases.filter(c=>c.status!=='closed');
  return `<h1>AI Resolution Hub</h1><p class="mut">Organise difficult tenant conversations, emergencies, disputes and negotiations without taking control away from landlords.</p>
@@ -1198,7 +1226,7 @@ document.addEventListener('submit',e=>{
  const c={id:'case-'+Date.now(),property:String(d.get('property')),type:String(d.get('type')),reporter:String(d.get('reporter')),description:description.slice(0,700),created:new Date().toLocaleString('en-GB'),status:'review'};
  RW25.cases.push(c);rw25Audit('Case created: '+RW25_TYPES[c.type].label+' · '+c.property);rw25Save();render();toast('Case recorded locally (demo)');return}
  if(f.matches('[data-rw25-rules]')){e.preventDefault();const d=new FormData(f),property=f.dataset.rw25Rules;if(!P.some(p=>p.addr===property))return;
- const rules={mode:d.get('mode')==='assist'?'assist':'review'};
+ const preset=['managed','approval','manual'].includes(d.get('preset'))?String(d.get('preset')):'approval';const rules={mode:preset==='managed'?'assist':'review',preset};
  for(const k of Object.keys(RW25_TYPES))rules[k]=k==='routine'&&d.get(k)==='auto'?'auto':d.get(k)==='alert'?'alert':'draft';
  rules.emergencyContact=String(d.get('emergencyContact')||'').slice(0,400);rules.notes=String(d.get('notes')||'').slice(0,500);
  RW25.controls[property]=rules;rw25Audit('Landlord changed rules for '+property);rw25Save();render();toast('Rules saved on this device (demo)')}
