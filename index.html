@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>RentWise V24 Proactive Compliance: Your property. Your way.</title>
+<!DOCTYPE html><html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>RentWise V25 Landlord Control & Resolution: Your property. Your way.</title>
 <link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0E5A57"><meta name="description" content="RentWise: Your property. Your way.">
 <link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="apple-touch-icon.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="RentWise"><meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700&display=swap">
@@ -127,7 +127,7 @@ body.rw-doc-open{overflow:hidden}
 .rw-operations-simple .rw-op-task{align-items:center}.rw-operations-simple .rw-op-copy{min-width:0;flex:1}.rw-operations-simple .rw-op-shortcuts .rw-group-link{padding:14px 2px}.rw-operations-simple .rw-hero{background:var(--soft);color:var(--ink)}.rw-operations-simple .rw-metrics>div{background:var(--card);border-color:var(--line)}.rw-operations-simple .rw-op-advanced>.rw-legacy{margin-top:16px}.rw-operations-simple .rw-legacy>h1,.rw-operations-simple .rw-legacy>p:first-of-type{display:none}.rw-operations-simple .rw-legacy>.grid{margin:12px 0}.rw-operations-simple .rw-legacy>.card{margin:12px 0;padding:16px}.rw-operations-simple .rw-legacy .market-form input,.rw-operations-simple .rw-legacy .market-form select{max-width:100%}.rw-operations-simple .rw-legacy .rw-let-gates{max-width:100%}@media(max-width:480px){.rw-operations-simple .rw-op-task{gap:8px}.rw-operations-simple .rw-op-task .btn{min-width:67px}.rw-operations-simple .rw-op-advanced{overflow-wrap:anywhere}}
  .rw-review-box{border:1px solid var(--line);background:var(--soft);border-radius:12px;padding:14px;margin:14px 0}.rw-review-box p{margin:8px 0 12px}.rw-review-box .btn:disabled{opacity:.5;cursor:not-allowed}.rw-safety-note{font-size:13px;color:var(--mut);border-left:3px solid var(--warn);padding:8px 12px;background:var(--warnb);border-radius:6px}.rw-newhome .rw-task{min-width:0}.rw-newhome .rw-task b{overflow-wrap:anywhere}@media(max-width:420px){.rw-task{flex-wrap:wrap}.rw-task .btn{margin-left:auto}}
 </style></head><body>
-<div class="demo">RentWise V24 · Investor prototype. Demonstration data only. Nothing is sent or paid.</div>
+<div class="demo">RentWise V25 · Investor prototype. Demonstration data only. Nothing is sent or paid.</div>
 <div class="app"><nav id="nav"></nav><main id="main"></main></div><div id="mod"></div>
 <script>
 const $=s=>document.querySelector(s),gbp=n=>'£'+Math.round(n).toLocaleString('en-GB'),T=new Date(new Date().getFullYear(),new Date().getMonth(),new Date().getDate(),12);
@@ -136,8 +136,8 @@ const ic=d=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-w
 const logo=`<span class="logo">${ic('M3 11l9-8 9 8M5 9.5V21h14V9.5M10 21v-6h4v6')}</span>`;
 const NAV=[['v12','AI Compliance','M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6zM9 12l2 2 4-4'],['showcase','Demo Tour','M3 5h18v14H3zM7 9h10M7 13h7'],['repairs','AI Repairs','M14 7l3 3-7 7-3-3zM3 21l6-6M16 3l5 5M4 4l4 4'],['market','Marketplace','M3 10l9-7 9 7v11H3zM9 21v-8h6v8'],['dash','Home','M3 11l9-8 9 8M5 9.5V21h14V9.5M10 21v-6h4v6'],['props','Properties','M3 21h18M5 21V8l7-5 7 5v13M9 21v-5h6v5'],['comp','Compliance','M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6zM9 12l2 2 4-4'],['wallet','Wallet','M3 7h18v14H3zM3 11h18M16 16h2'],['fin','Finances','M4 20V11M10 20V4M16 20v-6M22 20H2'],['ai','AI Assistant','M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8zM19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z']];
 const NAV_MAIN=[['dash','Home','M3 11l9-8 9 8M5 9.5V21h14V9.5M10 21v-6h4v6'],['props','Properties','M3 21h18M5 21V8l7-5 7 5v13M9 21v-5h6v5'],['manage','Manage','M14 7l3 3-7 7-3-3zM3 21l6-6M16 3l5 5M4 4l4 4'],['money','Money','M3 7h18v14H3zM3 11h18M16 16h2'],['more','More','M4 6h16M4 12h16M4 18h16']];
-const NAV_GROUPS={manage:[['operations','Operations hub','Tenant applications, compliance coordination, repair payments and pilot readiness'],['jobs','Automatic jobs','See renewals, inspections and work in progress'],['inspections','Property inspections','Arrange visits and save inspection reports'],['prices','AI job price list','Set a price and approval rule for each repair'],['repairs','Repairs','Track jobs, quotes and trusted contractors'],['v12','Compliance renewals','Certificates and 45-day monitoring'],['comp','Certificates','View all property certificates'],['ai','AI Assistant','See suggested actions']],money:[['statements','Rental statements','Monthly income, deductions and payouts'],['wallet','Wallet','Tenant rent payments, withdrawals and contractor invoices'],['fin','Finances','Income and expenses']],more:[['market','Marketplace','Browse and list rental homes'],['showcase','Demo Tour','Explore the guided demonstration'],['journey','Connected journeys','See maintenance, inspections, tenant finding and compliance work together'],['tests','Workflow test centre','Run safe payment-gate checks and follow the four-role test script']]};
-const NAV_PARENT={prices:'manage',jobs:'manage',inspections:'manage',statements:'money',repairs:'manage',v12:'manage',comp:'manage',ai:'manage',wallet:'money',fin:'money',market:'more',showcase:'more',journey:'more',tests:'more',operations:'manage'};
+const NAV_GROUPS={manage:[['resolution','Resolution hub','Tenant concerns, disputes, emergencies and landlord-controlled responses'],['controls','AI control centre','Choose how much work AI may prepare or automate for each property'],['operations','Operations hub','Tenant applications, compliance coordination, repair payments and pilot readiness'],['jobs','Automatic jobs','See renewals, inspections and work in progress'],['inspections','Property inspections','Arrange visits and save inspection reports'],['prices','AI job price list','Set a price and approval rule for each repair'],['repairs','Repairs','Track jobs, quotes and trusted contractors'],['v12','Compliance renewals','Certificates and 45-day monitoring'],['comp','Certificates','View all property certificates'],['ai','AI Assistant','See suggested actions']],money:[['statements','Rental statements','Monthly income, deductions and payouts'],['wallet','Wallet','Tenant rent payments, withdrawals and contractor invoices'],['fin','Finances','Income and expenses']],more:[['market','Marketplace','Browse and list rental homes'],['showcase','Demo Tour','Explore the guided demonstration'],['journey','Connected journeys','See maintenance, inspections, tenant finding and compliance work together'],['tests','Workflow test centre','Run safe payment-gate checks and follow the four-role test script']]};
+const NAV_PARENT={resolution:'manage',controls:'manage',prices:'manage',jobs:'manage',inspections:'manage',statements:'money',repairs:'manage',v12:'manage',comp:'manage',ai:'manage',wallet:'money',fin:'money',market:'more',showcase:'more',journey:'more',tests:'more',operations:'manage'};
 function groupPage(key){const titles={manage:['Manage','Repairs, compliance and contractors in one place.'],money:['Money','Keep track of rent, payments and expenses.'],more:['More','Explore the other RentWise features.']};return `<h1>${titles[key][0]}</h1><p class="mut">${titles[key][1]}</p><div class="card" style="padding:6px 14px">${NAV_GROUPS[key].map(([route,name,description])=>`<button class="rw-group-link" data-v="${route}"><span><b>${name}</b><small>${description}</small></span><span aria-hidden="true">›</span></button>`).join('')}</div>`}
 const raw=[
 ['14 Hollis Road','Leeds LS6 2BN','2-bed terrace','Amelia Hart',895,'2027-03-12','2029-05-01','2031-02-10','2027-01-20',0,'2027-04-30'],
@@ -1106,7 +1106,111 @@ function rwV23TestPage(){
 }
 document.addEventListener('click',e=>{if(!e.target.closest('[data-rw-v23-run]'))return;rwV23Run();render();});
 
-function render(){rwV14PriceDefaults();refreshCompliance();const V={prices:rwV14PricePage,jobs:jobsPage,inspections:inspectionsPage,statements:statementsPage,manage:()=>groupPage('manage'),money:()=>groupPage('money'),more:()=>groupPage('more'),v12:v12Page,showcase:showcasePage,journey:rwFlowPage,tests:rwV23TestPage,operations:rwOperationsPage,focus:rwFocusPage,applications:rwApplicationsPage,wallet:walletPage,repairs:repairPage,market:marketPage,dash,props:()=>S.p==null?props():det(),comp,fin,ai,tenant:tenantPage,contractor:contractorPage,inspector:rwInspectorPage};
+
+/* V25 — Landlord-first resolution workflow. Browser-only fictional demo; no AI API, messaging or dispatch. */
+const RW25_KEY='rentwise-v25-resolution';
+const RW25_TYPES={
+ routine:{label:'Routine tenant question',risk:'low'},
+ complaint:{label:'Complaint or difficult conversation',risk:'review'},
+ dispute:{label:'Deposit, damage or other dispute',risk:'review'},
+ arrears:{label:'Rent arrears or payment discussion',risk:'review'},
+ emergency:{label:'Emergency or urgent safety concern',risk:'urgent'},
+ legal:{label:'Legal notice or tenancy decision',risk:'restricted'},
+ negotiation:{label:'Negotiation or change of terms',risk:'review'},
+ condition:{label:'Damp, mould or building condition',risk:'urgent'}
+};
+const RW25_DEFAULT={controls:{},cases:[],log:[]};
+let RW25=structuredClone(RW25_DEFAULT);
+try{const x=JSON.parse(localStorage.getItem(RW25_KEY)||'{}');if(x&&typeof x==='object'){RW25.controls=x.controls||{};RW25.cases=Array.isArray(x.cases)?x.cases:[];RW25.log=Array.isArray(x.log)?x.log:[]}}catch(e){}
+function rw25Save(){try{localStorage.setItem(RW25_KEY,JSON.stringify(RW25))}catch(e){toast('Demo storage unavailable')}}
+function rw25Rules(property){
+ const d={mode:'review',routine:'draft',complaint:'draft',dispute:'draft',arrears:'draft',emergency:'alert',legal:'draft',negotiation:'draft',condition:'alert',emergencyContact:'',notes:''};
+ return {...d,...(RW25.controls[property]||{})};
+}
+function rw25Audit(message){RW25.log.unshift({at:new Date().toLocaleString('en-GB'),message});RW25.log=RW25.log.slice(0,60)}
+function rw25CaseState(c){
+ const rule=rw25Rules(c.property),type=RW25_TYPES[c.type]||RW25_TYPES.complaint;
+ const restricted=['legal','dispute','arrears','negotiation','condition','emergency'].includes(c.type);
+ const mode=rule[c.type]||'draft';
+ return {type,restricted,mode,canAuto:c.type==='routine'&&mode==='auto'&&rule.mode==='assist',urgent:type.risk==='urgent'};
+}
+function rw25Draft(c){
+ const intro='Thank you for contacting us about '+c.property+'. We have recorded your concern and will review the details.';
+ if(c.type==='emergency')return 'Your report has been flagged as urgent. If anyone is in immediate danger, contact emergency services. For a suspected gas leak, leave the area and contact the National Gas Emergency Service on 0800 111 999. Do not wait for a response through this demonstration.';
+ if(c.type==='condition')return intro+' Please provide any available photographs and tell us whether there is an immediate safety or health concern. We will arrange appropriate human assessment; this is not a diagnosis.';
+ if(c.type==='routine')return intro+' We will check the tenancy information and respond with the relevant details.';
+ if(c.type==='arrears')return intro+' We will review the payment record before discussing any next steps. No payment arrangement or legal action has been agreed.';
+ if(c.type==='legal')return intro+' The issue will be referred for appropriate legal review. No formal notice has been issued.';
+ return intro+' We will consider the evidence and proposed next steps before any decision is made.';
+}
+function rw25Status(c){return c.status==='closed'?'Closed':c.status==='approved'?'Draft approved (not sent)':c.status==='review'?'Landlord review required':'Open'}
+function rw25CaseCard(c){
+ const st=rw25CaseState(c),urgent=st.urgent;
+ return `<div class="card" style="margin:12px 0;border-left:5px solid ${urgent?'var(--bad)':'var(--brand)'}">
+ <div class="row" style="border:0;padding-top:0"><b>${me(st.type.label)}</b><span class="chip ${urgent?'bad':'warn'}">${me(rw25Status(c))}</span></div>
+ <p class="mut">${me(c.property)} · ${me(c.created)} · ${me(c.reporter)}</p><p>${me(c.description)}</p>
+ ${urgent?'<p class="rw-safety-note"><b>Safety escalation:</b> This demo cannot call emergency services, notify anyone or dispatch a contractor. Urgent matters need immediate real-world action.</p>':''}
+ <details class="rw-fold"><summary>Evidence, suggested response & decision</summary>
+ <p class="mut">Suggested workflow: ${st.restricted?'Human review required; no binding decisions or external actions.':st.canAuto?'Routine response permitted by this property’s demo settings; no message is actually sent.':'Prepare draft for landlord review.'}</p>
+ <div class="draft">${me(rw25Draft(c))}</div>
+ <p class="mut">Evidence checklist: original report, dated messages, relevant tenancy terms, photographs, previous jobs and inspection records. Evidence is not independently verified.</p>
+ <div class="chips">${c.status!=='closed'?`<button class="btn g" data-rw25-action="approve" data-rw25-id="${me(c.id)}">Approve draft only</button><button class="btn g" data-rw25-action="close" data-rw25-id="${me(c.id)}">Mark resolved</button>`:''}</div>
+ </details></div>`;
+}
+function rwControlsPage(){
+ return `<h1>AI Control Centre</h1><p class="mut">Every property has its own rules. The landlord decides what RentWise may draft, flag or handle. These demonstration settings never send messages, book contractors or move money.</p>
+ ${P.map(p=>{const r=rw25Rules(p.addr);return `<details class="card rw-fold" style="margin:12px 0"><summary>${me(p.addr)} · ${r.mode==='assist'?'Routine assistance enabled':'Approval-first'}</summary>
+ <form class="market-form" data-rw25-rules="${me(p.addr)}">
+ <label>Overall communication preference</label><select name="mode"><option value="review" ${r.mode==='review'?'selected':''}>Approval-first (recommended)</option><option value="assist" ${r.mode==='assist'?'selected':''}>Allow permitted routine assistance</option></select>
+ ${Object.entries(RW25_TYPES).map(([key,t])=>`<label>${me(t.label)}</label><select name="${key}">
+ <option value="alert" ${r[key]==='alert'?'selected':''}>Flag and escalate — no draft action</option>
+ <option value="draft" ${r[key]==='draft'?'selected':''}>Prepare a draft for landlord review</option>
+ ${key==='routine'?`<option value="auto" ${r[key]==='auto'?'selected':''}>Allow routine auto-response (future live feature; simulated only)</option>`:''}
+ </select>`).join('')}
+ <label>Emergency contact instructions (for landlord reference)</label><textarea name="emergencyContact" maxlength="400" placeholder="Trusted contacts and escalation instructions">${me(r.emergencyContact)}</textarea>
+ <label>Additional landlord instructions</label><textarea name="notes" maxlength="500" placeholder="Rules specific to this property">${me(r.notes)}</textarea>
+ <button class="btn" type="submit">Save property rules (demo)</button>
+ <p class="rw-safety-note">Legal decisions, disputes, financial commitments, sensitive communications and safety matters always require human review or escalation. Existing repair and payment approval gates remain separate and unchanged.</p>
+ </form></details>`}).join('')}
+ <button class="btn g" data-v="resolution">Open Resolution Hub</button>`;
+}
+function rwResolutionPage(){
+ const active=RW25.cases.filter(c=>c.status!=='closed');
+ return `<h1>AI Resolution Hub</h1><p class="mut">Organise difficult tenant conversations, emergencies, disputes and negotiations without taking control away from landlords.</p>
+ <div class="card rw-simple-card"><h2>New concern or incident</h2><p class="mut">Fictional demonstration only. Do not enter real tenant names, contact details or sensitive information.</p>
+ <form class="market-form" id="rw25-intake">
+ <label>Property</label><select name="property">${P.map(p=>`<option value="${me(p.addr)}">${me(p.addr)}</option>`).join('')}</select>
+ <label>Issue type</label><select name="type">${Object.entries(RW25_TYPES).map(([k,t])=>`<option value="${k}">${me(t.label)}</option>`).join('')}</select>
+ <label>Reported by</label><select name="reporter"><option>Tenant (demo)</option><option>Landlord (demo)</option><option>Inspector (demo)</option></select>
+ <label>What happened?</label><textarea name="description" maxlength="700" required placeholder="Describe a fictional example"></textarea>
+ <button class="btn" type="submit">Create case and suggested next steps</button></form></div>
+ <div class="card"><h2>Cases needing attention (${active.length})</h2><p class="mut">Nothing is sent externally. Landlord approval records a demo decision only.</p>
+ ${active.length?active.slice().reverse().map(rw25CaseCard).join(''):'<p class="mut">No open cases. Try reporting a fictional tenant concern above.</p>'}</div>
+ <details class="card rw-fold" style="margin:12px 0"><summary>Completed cases and decision history</summary>
+ ${RW25.cases.filter(c=>c.status==='closed').slice().reverse().map(rw25CaseCard).join('')||'<p class="mut">No completed cases.</p>'}
+ ${RW25.log.map(x=>`<div class="rw-activity-line"><small>${me(x.at)}</small><p>${me(x.message)}</p></div>`).join('')}
+ </details>
+ <div class="chips"><button class="btn g" data-v="controls">Change landlord rules</button><button class="btn g" data-v="operations">Operations hub</button></div>`;
+}
+document.addEventListener('submit',e=>{
+ const f=e.target;
+ if(f.id==='rw25-intake'){e.preventDefault();const d=new FormData(f),description=String(d.get('description')||'').trim();if(!description)return;
+ const c={id:'case-'+Date.now(),property:String(d.get('property')),type:String(d.get('type')),reporter:String(d.get('reporter')),description:description.slice(0,700),created:new Date().toLocaleString('en-GB'),status:'review'};
+ RW25.cases.push(c);rw25Audit('Case created: '+RW25_TYPES[c.type].label+' · '+c.property);rw25Save();render();toast('Case recorded locally (demo)');return}
+ if(f.matches('[data-rw25-rules]')){e.preventDefault();const d=new FormData(f),property=f.dataset.rw25Rules;if(!P.some(p=>p.addr===property))return;
+ const rules={mode:d.get('mode')==='assist'?'assist':'review'};
+ for(const k of Object.keys(RW25_TYPES))rules[k]=k==='routine'&&d.get(k)==='auto'?'auto':d.get(k)==='alert'?'alert':'draft';
+ rules.emergencyContact=String(d.get('emergencyContact')||'').slice(0,400);rules.notes=String(d.get('notes')||'').slice(0,500);
+ RW25.controls[property]=rules;rw25Audit('Landlord changed rules for '+property);rw25Save();render();toast('Rules saved on this device (demo)')}
+});
+document.addEventListener('click',e=>{const b=e.target.closest('[data-rw25-action]');if(!b)return;
+ const c=RW25.cases.find(x=>x.id===b.dataset.rw25Id);if(!c)return;
+ if(b.dataset.rw25Action==='approve'){if(c.status==='closed')return;c.status='approved';rw25Audit('Landlord approved draft only; not sent · '+c.property)}
+ else if(b.dataset.rw25Action==='close'){c.status='closed';rw25Audit('Landlord marked case resolved · '+c.property)}
+ rw25Save();render();toast('Decision recorded (demo only)');
+});
+
+function render(){rwV14PriceDefaults();refreshCompliance();const V={resolution:rwResolutionPage,controls:rwControlsPage,prices:rwV14PricePage,jobs:jobsPage,inspections:inspectionsPage,statements:statementsPage,manage:()=>groupPage('manage'),money:()=>groupPage('money'),more:()=>groupPage('more'),v12:v12Page,showcase:showcasePage,journey:rwFlowPage,tests:rwV23TestPage,operations:rwOperationsPage,focus:rwFocusPage,applications:rwApplicationsPage,wallet:walletPage,repairs:repairPage,market:marketPage,dash,props:()=>S.p==null?props():det(),comp,fin,ai,tenant:tenantPage,contractor:contractorPage,inspector:rwInspectorPage};
 $('#nav').innerHTML=`<div class="brand">${logo}<div>RentWise<small>Your property. Your way.</small></div></div>`+(DEMO_ROLE==='landlord'?NAV_MAIN:DEMO_ROLE==='tenant'?[['applications','Applications','M9 11l3 3L22 4'],['tenant','My home','M3 11l9-8 9 8M5 9.5V21h14V9.5M10 21v-6h4v6'],['market','Explore homes','M3 10l9-7 9 7v11H3zM9 21v-8h6v8'] ]:DEMO_ROLE==='inspector'?[['inspector','My visits','M9 11l3 3L22 4'],['inspections','Routine jobs','M9 11l3 3L22 4']]:[['contractor','My jobs','M14 7l3 3-7 7-3-3zM3 21l6-6M16 3l5 5']]).map(n=>`<button class="b ${(S.v===n[0]||NAV_PARENT[S.v]===n[0])?'on':''}" data-v="${n[0]}">${ic(n[2])}${n[1]}</button>`).join('');
 $('#main').innerHTML=`<div class="top">${logo}<div>RentWise<small>Your property. Your way.</small></div></div>`+demoRoleBar()+V[S.v]();
 $('#mod').innerHTML=S.m?modal():'';
